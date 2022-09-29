@@ -225,7 +225,63 @@ char *findStructures(int structureType, Generator g, int range, int x, int z)
     }
 }
 
-void findBiome(int biome, Generator g, int range, int x, int y, int z){}
+
+//WORK IN PROGRESS
+char *__findBiome(int biome, Generator g, int range, int x, int z, int vertPos, int vertHeight)
+{
+    char *position = malloc(sizeof(char) * 100);
+
+    Range r;
+    r.scale = 1;
+
+    // horizontal axes @ scale 1:16
+    r.x = x, r.z = z;           // position (x, z)
+    r.sx = range, r.sz = range; // size (width, height), representing 128 blocks
+
+    // vertical axis @ scale 1:4
+    r.y = vertPos; // vertical position
+    r.sy = vertHeight; // vertical height
+
+
+    int *biomeIds = allocCache(&g, r);
+    genBiomes(&g, biomeIds, r);
+
+    int i_x, i_y, i_z;
+
+    for (i_y = 0; i_y < r.sy; i_y++)
+    {
+        for (i_z = 0; i_z < r.sz; i_z++)
+        {
+            for (i_x = 0; i_x < r.sx; i_x++)
+            {
+                int index = i_y * r.sx * r.sz + i_z * r.sx + i_x;
+                int id = biomeIds[index];
+                // scaled coordinate for this index:
+                int _x = r.x + i_x;
+                int _z = r.z + i_z;
+                int _y = r.y + i_y;
+
+                // which represents the block position:
+                int bx = _x * r.scale;
+                int bz = _z * r.scale;
+                int by = _y * (r.scale == 1 ? 1 : 4);
+
+                printf("%s, %d,%d,%d\n", biome2str(g.mc, id),  _x, _y, _z);
+
+                if (id == biome)
+                {
+                    char str[80];
+                    int distance = sqrt(pow((x - _x), 2) + pow((z - _z), 2));
+                    sprintf(str, "%d,%d,%d,%d\n", bx, by, bz, distance);
+                    strcat(position, str);
+
+                    return position;
+                }
+            }
+        }
+    }
+    return position;
+}
 
 /* Structure name to string */
 char *struct2str(int structType)

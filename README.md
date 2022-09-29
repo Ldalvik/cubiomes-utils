@@ -20,8 +20,7 @@ This section is meant to give you a quick starting point with small example prog
 
 ### Generate an image of the world (using cubiomes_utils.c)
 
-This script will generate an image called `map_[seed].ppm` in the directory it was ran in.
-
+This script will generate an image called `map_[seed].ppm` in the directory it was ran in. (example/create_map_example.c)
 ```C
     //Set version and seed
     int mc = MC_1_19;
@@ -54,7 +53,7 @@ This script will generate an image called `map_[seed].ppm` in the directory it w
 
 ### Search for structures in range (using cubiomes_utils.c)
 
-This script will return a list of structures within a given range of the X and Z coordinates.
+This script will return a list of structures within a given range of the X and Z coordinates. (example/find_structures.c)
 
 ```C
     //Set version and seed
@@ -95,7 +94,7 @@ This script will return a list of structures within a given range of the X and Z
 
 ### Search for strongholds (using cubiomes_utils.c)
 
-This script will return the position of stronghold.
+This script will return the position of strongholds. (example/find_strongholds.c)
 
 ```C
     //Set version and seed
