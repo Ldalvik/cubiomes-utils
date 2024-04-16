@@ -4,14 +4,8 @@
 #include <math.h>
 #include <stdio.h>
 
-
-double maintainPrecision(double x)
-{
-    return x - floor(x / 33554432.0 + 0.5) * 33554432.0;
-}
-
 // grad()
-/*
+#if 0
 static double indexedLerp(int idx, double d1, double d2, double d3)
 {
     const double cEdgeX[] = { 1.0,-1.0, 1.0,-1.0, 1.0,-1.0, 1.0,-1.0,
@@ -24,9 +18,9 @@ static double indexedLerp(int idx, double d1, double d2, double d3)
     idx &= 0xf;
     return cEdgeX[idx] * d1 + cEdgeY[idx] * d2 + cEdgeZ[idx] * d3;
 }
-*/
-ATTR(hot, const, always_inline, artificial)
-static inline double indexedLerp(int idx, double a, double b, double c)
+#else
+ATTR(hot, const)
+static inline double indexedLerp(uint8_t idx, double a, double b, double c)
 {
    switch (idx & 0xf)
    {
@@ -50,6 +44,7 @@ static inline double indexedLerp(int idx, double a, double b, double c)
    UNREACHABLE();
    return 0;
 }
+#endif
 
 void perlinInit(PerlinNoise *noise, uint64_t *seed)
 {
@@ -61,18 +56,24 @@ void perlinInit(PerlinNoise *noise, uint64_t *seed)
     noise->amplitude = 1.0;
     noise->lacunarity = 1.0;
 
+    uint8_t *idx = noise->d;
     for (i = 0; i < 256; i++)
     {
-        noise->d[i] = i;
+        idx[i] = i;
     }
     for (i = 0; i < 256; i++)
     {
         int j = nextInt(seed, 256 - i) + i;
-        uint8_t n = noise->d[i];
-        noise->d[i] = noise->d[j];
-        noise->d[j] = n;
-        noise->d[i + 256] = noise->d[i];
+        uint8_t n = idx[i];
+        idx[i] = idx[j];
+        idx[j] = n;
     }
+    idx[256] = idx[0];
+    double i2 = floor(noise->b);
+    double d2 = noise->b - i2;
+    noise->h2 = (int) i2;
+    noise->d2 = d2;
+    noise->t2 = d2*d2*d2 * (d2 * (d2*6.0-15.0) + 10.0);
 }
 
 void xPerlinInit(PerlinNoise *noise, Xoroshiro *xr)
@@ -85,36 +86,60 @@ void xPerlinInit(PerlinNoise *noise, Xoroshiro *xr)
     noise->amplitude = 1.0;
     noise->lacunarity = 1.0;
 
+    uint8_t *idx = noise->d;
     for (i = 0; i < 256; i++)
     {
-        noise->d[i] = i;
+        idx[i] = i;
     }
     for (i = 0; i < 256; i++)
     {
         int j = xNextInt(xr, 256 - i) + i;
-        uint8_t n = noise->d[i];
-        noise->d[i] = noise->d[j];
-        noise->d[j] = n;
-        noise->d[i + 256] = noise->d[i];
+        uint8_t n = idx[i];
+        idx[i] = idx[j];
+        idx[j] = n;
     }
+    idx[256] = idx[0];
+    double i2 = floor(noise->b);
+    double d2 = noise->b - i2;
+    noise->h2 = (int) i2;
+    noise->d2 = d2;
+    noise->t2 = d2*d2*d2 * (d2 * (d2*6.0-15.0) + 10.0);
 }
-
 
 double samplePerlin(const PerlinNoise *noise, double d1, double d2, double d3,
         double yamp, double ymin)
 {
+    uint8_t h1, h2, h3;
+    double t1, t2, t3;
+
+    if (d2 == 0.0)
+    {
+        d2 = noise->d2;
+        h2 = noise->h2;
+        t2 = noise->t2;
+    }
+    else
+    {
+        d2 += noise->b;
+        double i2 = floor(d2);
+        d2 -= i2;
+        h2 = (int) i2;
+        t2 = d2*d2*d2 * (d2 * (d2*6.0-15.0) + 10.0);
+    }
+
     d1 += noise->a;
-    d2 += noise->b;
     d3 += noise->c;
-    int i1 = (int)d1 - (int)(d1 < 0);
-    int i2 = (int)d2 - (int)(d2 < 0);
-    int i3 = (int)d3 - (int)(d3 < 0);
+
+    double i1 = floor(d1);
+    double i3 = floor(d3);
     d1 -= i1;
-    d2 -= i2;
     d3 -= i3;
-    double t1 = d1*d1*d1 * (d1 * (d1*6.0-15.0) + 10.0);
-    double t2 = d2*d2*d2 * (d2 * (d2*6.0-15.0) + 10.0);
-    double t3 = d3*d3*d3 * (d3 * (d3*6.0-15.0) + 10.0);
+
+    h1 = (int) i1;
+    h3 = (int) i3;
+
+    t1 = d1*d1*d1 * (d1 * (d1*6.0-15.0) + 10.0);
+    t3 = d3*d3*d3 * (d3 * (d3*6.0-15.0) + 10.0);
 
     if (yamp)
     {
@@ -122,25 +147,54 @@ double samplePerlin(const PerlinNoise *noise, double d1, double d2, double d3,
         d2 -= floor(yclamp / yamp) * yamp;
     }
 
-    i1 &= 0xff;
-    i2 &= 0xff;
-    i3 &= 0xff;
+    const uint8_t *idx = noise->d;
 
-    int a1 = noise->d[i1]   + i2;
-    int a2 = noise->d[a1]   + i3;
-    int a3 = noise->d[a1+1] + i3;
-    int b1 = noise->d[i1+1] + i2;
-    int b2 = noise->d[b1]   + i3;
-    int b3 = noise->d[b1+1] + i3;
+#if 1
+    // try to promote optimizations that can utilize the {xh, xl} registers
+    typedef struct vec2 { uint8_t a, b; } vec2;
 
-    double l1 = indexedLerp(noise->d[a2],   d1,   d2,   d3);
-    double l2 = indexedLerp(noise->d[b2],   d1-1, d2,   d3);
-    double l3 = indexedLerp(noise->d[a3],   d1,   d2-1, d3);
-    double l4 = indexedLerp(noise->d[b3],   d1-1, d2-1, d3);
-    double l5 = indexedLerp(noise->d[a2+1], d1,   d2,   d3-1);
-    double l6 = indexedLerp(noise->d[b2+1], d1-1, d2,   d3-1);
-    double l7 = indexedLerp(noise->d[a3+1], d1,   d2-1, d3-1);
-    double l8 = indexedLerp(noise->d[b3+1], d1-1, d2-1, d3-1);
+    vec2 v1 = { idx[h1], idx[h1+1] };
+    v1.a += h2;
+    v1.b += h2;
+
+    vec2 v2 = { idx[v1.a], idx[v1.a+1] };
+    vec2 v3 = { idx[v1.b], idx[v1.b+1] };
+    v2.a += h3;
+    v2.b += h3;
+    v3.a += h3;
+    v3.b += h3;
+
+    vec2 v4 = { idx[v2.a], idx[v2.a+1] };
+    vec2 v5 = { idx[v2.b], idx[v2.b+1] };
+    vec2 v6 = { idx[v3.a], idx[v3.a+1] };
+    vec2 v7 = { idx[v3.b], idx[v3.b+1] };
+
+    double l1 = indexedLerp(v4.a, d1,   d2,   d3);
+    double l5 = indexedLerp(v4.b, d1,   d2,   d3-1);
+    double l2 = indexedLerp(v6.a, d1-1, d2,   d3);
+    double l6 = indexedLerp(v6.b, d1-1, d2,   d3-1);
+    double l3 = indexedLerp(v5.a, d1,   d2-1, d3);
+    double l7 = indexedLerp(v5.b, d1,   d2-1, d3-1);
+    double l4 = indexedLerp(v7.a, d1-1, d2-1, d3);
+    double l8 = indexedLerp(v7.b, d1-1, d2-1, d3-1);
+#else
+    uint8_t a1 = idx[h1]   + h2;
+    uint8_t b1 = idx[h1+1] + h2;
+
+    uint8_t a2 = idx[a1]   + h3;
+    uint8_t b2 = idx[b1]   + h3;
+    uint8_t a3 = idx[a1+1] + h3;
+    uint8_t b3 = idx[b1+1] + h3;
+
+    double l1 = indexedLerp(idx[a2],   d1,   d2,   d3);
+    double l2 = indexedLerp(idx[b2],   d1-1, d2,   d3);
+    double l3 = indexedLerp(idx[a3],   d1,   d2-1, d3);
+    double l4 = indexedLerp(idx[b3],   d1-1, d2-1, d3);
+    double l5 = indexedLerp(idx[a2+1], d1,   d2,   d3-1);
+    double l6 = indexedLerp(idx[b2+1], d1-1, d2,   d3-1);
+    double l7 = indexedLerp(idx[a3+1], d1,   d2-1, d3-1);
+    double l8 = indexedLerp(idx[b3+1], d1-1, d2-1, d3-1);
+#endif
 
     l1 = lerp(t1, l1, l2);
     l3 = lerp(t1, l3, l4);
@@ -151,6 +205,90 @@ double samplePerlin(const PerlinNoise *noise, double d1, double d2, double d3,
     l5 = lerp(t2, l5, l7);
 
     return lerp(t3, l1, l5);
+}
+
+static
+void samplePerlinBeta17Terrain(const PerlinNoise *noise, double *v,
+        double d1, double d3, double yLacAmp)
+{
+    int genFlag = -1;
+    double l1 = 0;
+    double l3 = 0;
+    double l5 = 0;
+    double l7 = 0;
+
+    d1 += noise->a;
+    d3 += noise->c;
+    const uint8_t *idx = noise->d;
+    int i1 = (int) floor(d1);
+    int i3 = (int) floor(d3);
+    d1 -= i1;
+    d3 -= i3;
+    double t1 = d1*d1*d1 * (d1 * (d1*6.0-15.0) + 10.0);
+    double t3 = d3*d3*d3 * (d3 * (d3*6.0-15.0) + 10.0);
+
+    i1 &= 0xff;
+    i3 &= 0xff;
+
+    double d2;
+    int i2, yi, yic = 0, gfCopy = 0;
+    for (yi = 0; yi <= 7; yi++)
+    {
+        d2 = yi*noise->lacunarity*yLacAmp+noise->b;
+        i2 = ((int) floor(d2)) & 0xff;
+        if (yi == 0 || i2 != genFlag)
+        {
+            yic = yi;
+            gfCopy = genFlag;
+            genFlag = i2;
+        }
+    }
+    genFlag = gfCopy;
+
+    double t2;
+    for (yi = yic; yi <= 8; yi++)
+    {
+        d2 = yi*noise->lacunarity*yLacAmp+noise->b;
+        i2 = (int) floor(d2);
+        d2 -= i2;
+        t2 = d2*d2*d2 * (d2 * (d2*6.0-15.0) + 10.0);
+
+        i2 &= 0xff;
+
+        if (yi == 0 || i2 != genFlag)
+        {
+            genFlag = i2;
+            int a1 = idx[i1]   + i2;
+            int b1 = idx[i1+1] + i2;
+
+            int a2 = idx[a1]   + i3;
+            int a3 = idx[a1+1] + i3;
+            int b2 = idx[b1]   + i3;
+            int b3 = idx[b1+1] + i3;
+
+            double m1 = indexedLerp(idx[a2],   d1,   d2,   d3);
+            double l2 = indexedLerp(idx[b2],   d1-1, d2,   d3);
+            double m3 = indexedLerp(idx[a3],   d1,   d2-1, d3);
+            double l4 = indexedLerp(idx[b3],   d1-1, d2-1, d3);
+            double m5 = indexedLerp(idx[a2+1], d1,   d2,   d3-1);
+            double l6 = indexedLerp(idx[b2+1], d1-1, d2,   d3-1);
+            double m7 = indexedLerp(idx[a3+1], d1,   d2-1, d3-1);
+            double l8 = indexedLerp(idx[b3+1], d1-1, d2-1, d3-1);
+
+            l1 = lerp(t1, m1, l2);
+            l3 = lerp(t1, m3, l4);
+            l5 = lerp(t1, m5, l6);
+            l7 = lerp(t1, m7, l8);
+        }
+
+        if (yi >= 7)
+        {
+            double n1 = lerp(t2, l1, l3);
+            double n5 = lerp(t2, l5, l7);
+
+            v[yi-7] += lerp(t3, n1, n5) * noise->amplitude;
+        }
+    }
 }
 
 static double simplexGrad(int idx, double x, double y, double z, double d)
@@ -191,7 +329,6 @@ double sampleSimplex2D(const PerlinNoise *noise, double x, double y)
     t += simplexGrad(gi2 % 12, x2, y2, 0.0, 0.5);
     return 70.0 * t;
 }
-
 
 void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves,
         int omin, int len)
@@ -235,10 +372,26 @@ void octaveInit(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves,
     noise->octcnt = len;
 }
 
-int xOctaveInit(OctaveNoise *noise, Xoroshiro *xr, PerlinNoise *octaves,
-        const double *amplitudes, int omin, int len)
+void octaveInitBeta(OctaveNoise *noise, uint64_t *seed, PerlinNoise *octaves,
+    int octcnt, double lac, double lacMul, double persist, double persistMul)
 {
-    const uint64_t md5_octave_n[][2] = {
+    int i;
+    for (i = 0; i < octcnt; i++)
+    {
+        perlinInit(&octaves[i], seed);
+        octaves[i].amplitude = persist;
+        octaves[i].lacunarity = lac;
+        persist *= persistMul;
+        lac *= lacMul;
+    }
+    noise->octaves = octaves;
+    noise->octcnt = octcnt;
+}
+
+int xOctaveInit(OctaveNoise *noise, Xoroshiro *xr, PerlinNoise *octaves,
+        const double *amplitudes, int omin, int len, int nmax)
+{
+    static const uint64_t md5_octave_n[][2] = {
         {0xb198de63a8012672, 0x7b84cad43ef7b5a8}, // md5 "octave_-12"
         {0x0fd787bfbc403ec3, 0x74a4a31ca21b48b8}, // md5 "octave_-11"
         {0x36d326eed40efeb2, 0x5be9ce18223c636a}, // md5 "octave_-10"
@@ -253,14 +406,28 @@ int xOctaveInit(OctaveNoise *noise, Xoroshiro *xr, PerlinNoise *octaves,
         {0xdffa22b534c5f608, 0xb9b67517d3665ca9}, // md5 "octave_-1"
         {0xd50708086cef4d7c, 0x6e1651ecc7f43309}, // md5 "octave_0"
     };
-
-    int i = 0, n = 0;
-    double lacuna = pow(2.0, omin);
-    double persist = pow(2.0, len-1) / ((1LL << len) - 1.0);
+    static const double lacuna_ini[] = { // -omin = 3..12
+        1, .5, .25, 1./8, 1./16, 1./32, 1./64, 1./128, 1./256, 1./512, 1./1024,
+        1./2048, 1./4096,
+    };
+    static const double persist_ini[] = { // len = 4..9
+        0, 1, 2./3, 4./7, 8./15, 16./31, 32./63, 64./127, 128./255, 256./511,
+    };
+#if DEBUG
+    if (-omin < 0 || -omin >= (int) (sizeof(lacuna_ini)/sizeof(double)) ||
+        len < 0 || len >= (int) (sizeof(persist_ini)/sizeof(double)))
+    {
+        printf("Fatal: octave initialization out of range\n");
+        exit(1);
+    }
+#endif
+    double lacuna = lacuna_ini[-omin];
+    double persist = persist_ini[len];
     uint64_t xlo = xNextLong(xr);
     uint64_t xhi = xNextLong(xr);
+    int i = 0, n = 0;
 
-    for (; i < len; i++, lacuna *= 2.0, persist *= 0.5)
+    for (; i < len && n != nmax; i++, lacuna *= 2.0, persist *= 0.5)
     {
         if (amplitudes[i] == 0)
             continue;
@@ -279,6 +446,24 @@ int xOctaveInit(OctaveNoise *noise, Xoroshiro *xr, PerlinNoise *octaves,
 }
 
 
+double sampleOctaveAmp(const OctaveNoise *noise, double x, double y, double z,
+        double yamp, double ymin, int ydefault)
+{
+    double v = 0;
+    int i;
+    for (i = 0; i < noise->octcnt; i++)
+    {
+        PerlinNoise *p = noise->octaves + i;
+        double lf = p->lacunarity;
+        double ax = maintainPrecision(x * lf);
+        double ay = ydefault ? -p->b : maintainPrecision(y * lf);
+        double az = maintainPrecision(z * lf);
+        double pv = samplePerlin(p, ax, ay, az, yamp * lf, ymin * lf);
+        v += p->amplitude * pv;
+    }
+    return v;
+}
+
 double sampleOctave(const OctaveNoise *noise, double x, double y, double z)
 {
     double v = 0;
@@ -296,6 +481,40 @@ double sampleOctave(const OctaveNoise *noise, double x, double y, double z)
     return v;
 }
 
+double sampleOctaveBeta17Biome(const OctaveNoise *noise, double x, double z)
+{
+    double v = 0;
+    int i;
+    for (i = 0; i < noise->octcnt; i++)
+    {
+        PerlinNoise *p = noise->octaves + i;
+        double lf = p->lacunarity;
+        double ax = maintainPrecision(x * lf) + p->a;
+        double az = maintainPrecision(z * lf) + p->b;
+        double pv = sampleSimplex2D(p, ax, az);
+        v += p->amplitude * pv;
+    }
+    return v;
+}
+
+void sampleOctaveBeta17Terrain(const OctaveNoise *noise, double *v,
+        double x, double z, int yLacFlag, double lacmin)
+{
+    v[0] = 0.0;
+    v[1] = 0.0;
+    int i;
+    for (i = 0; i < noise->octcnt; i++)
+    {
+        PerlinNoise *p = noise->octaves + i;
+        double lf = p->lacunarity;
+        if (lacmin && lf > lacmin)
+            continue;
+        double ax = maintainPrecision(x * lf);
+        double az = maintainPrecision(z * lf);
+        samplePerlinBeta17Terrain(p, v, ax, az, yLacFlag ? 0.5 : 1.0);
+    }
+}
+
 
 void doublePerlinInit(DoublePerlinNoise *noise, uint64_t *seed,
         PerlinNoise *octavesA, PerlinNoise *octavesB, int omin, int len)
@@ -306,29 +525,37 @@ void doublePerlinInit(DoublePerlinNoise *noise, uint64_t *seed,
 }
 
 /**
- * Sets up a DoublePerlinNoise generator (MC 1.18).
+ * Sets up a DoublePerlinNoise generator (MC 1.18+).
  * @noise:      Object to be initialized
  * @xr:         Xoroshiro random object
- * @octaves:    Octaves buffer, size has to be 2x (No. non-zeros in amplitudes)
+ * @octaves:    Octaves buffer, size has to be 2x (# non-zeros in amplitudes)
  * @amplitudes: Octave amplitude, needs at least one non-zero
  * @omin:       First octave
  * @len:        Length of amplitudes array
+ * @nmax:       Number of octaves available in buffer (can be <=0 to ignore)
  * @return Number of octaves used (see octaves buffer size).
  */
 int xDoublePerlinInit(DoublePerlinNoise *noise, Xoroshiro *xr,
-        PerlinNoise *octaves, const double *amplitudes,
-        int omin, int len)
+        PerlinNoise *octaves, const double *amplitudes, int omin, int len, int nmax)
 {
-    int i, n = 0;
-    n += xOctaveInit(&noise->octA, xr, octaves+n, amplitudes, omin, len);
-    n += xOctaveInit(&noise->octB, xr, octaves+n, amplitudes, omin, len);
+    int i, n = 0, na = -1, nb = -1;
+    if (nmax > 0)
+    {
+        na = (nmax + 1) >> 1;
+        nb = nmax - na;
+    }
+    n += xOctaveInit(&noise->octA, xr, octaves+n, amplitudes, omin, len, na);
+    n += xOctaveInit(&noise->octB, xr, octaves+n, amplitudes, omin, len, nb);
 
     // trim amplitudes of zero
     for (i = len-1; i >= 0 && amplitudes[i] == 0.0; i--)
         len--;
     for (i = 0; amplitudes[i] == 0.0; i++)
         len--;
-    noise->amplitude = (10.0 / 6.0) * len / (len + 1);
+    static const double amp_ini[] = { // (5 ./ 3) * len / (len + 1), len = 2..9
+        0, 5./6, 10./9, 15./12, 20./15, 25./18, 30./21, 35./24, 40./27, 45./30,
+    };
+    noise->amplitude = amp_ini[len];
     return n;
 }
 

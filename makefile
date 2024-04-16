@@ -19,18 +19,19 @@ all: release
 
 debug: CFLAGS += -DDEBUG -O0 -ggdb3
 debug: libcubiomes
-release: CFLAGS += -O3 -g3
+release: CFLAGS += -O3
 release: libcubiomes
-native: CFLAGS += -O3 -march=native
+native: CFLAGS += -O3 -march=native -ffast-math
 native: libcubiomes
 
-ifeq ($(OS),Windows_NT)
-else
-libcubiomes: CFLAGS += -fPIC
+ifneq ($(OS),Windows_NT)
+release: CFLAGS += -fPIC
+#debug: CFLAGS += -fsanitize=undefined
 endif
-libcubiomes: noise.o biome_tree.o layers.o generator.o finders.o util.o quadbase.o
-	$(AR) $(ARFLAGS) libcubiomes.a $^
 
+
+libcubiomes: noise.o layers.o biometree.o biomenoise.o generator.o finders.o util.o quadbase.o
+	$(AR) $(ARFLAGS) libcubiomes.a $^
 
 finders.o: finders.c finders.h
 	$(CC) -c $(CFLAGS) $<
@@ -38,10 +39,13 @@ finders.o: finders.c finders.h
 generator.o: generator.c generator.h
 	$(CC) -c $(CFLAGS) $<
 
-layers.o: layers.c layers.h
+biomenoise.o: biomenoise.c
 	$(CC) -c $(CFLAGS) $<
 
-biome_tree.o: biome_tree.c
+biometree.o: biometree.c
+	$(CC) -c $(CFLAGS) $<
+
+layers.o: layers.c layers.h
 	$(CC) -c $(CFLAGS) $<
 
 noise.o: noise.c noise.h
@@ -54,5 +58,5 @@ quadbase.o: quadbase.c quadbase.h
 	$(CC) -c $(CFLAGS) $<
 
 clean:
-	$(RM) *.o libcubiomes.a
+	$(RM) *.o *.a
 

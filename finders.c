@@ -8,7 +8,7 @@
 #include <math.h>
 
 
-#define PI 3.141592653589793
+#define PI 3.14159265358979323846
 
 
 
@@ -59,40 +59,48 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
 {
     static const StructureConfig
     // for desert pyramids, jungle temples, witch huts and igloos prior to 1.13
-    s_feature               = { 14357617, 32, 24, Feature,          0},
-    s_igloo_112             = { 14357617, 32, 24, Igloo,            0},
-    s_swamp_hut_112         = { 14357617, 32, 24, Swamp_Hut,        0},
-    s_desert_pyramid_112    = { 14357617, 32, 24, Desert_Pyramid,   0},
-    s_jungle_temple_112     = { 14357617, 32, 24, Jungle_Pyramid,   0},
+    s_feature               = { 14357617, 32, 24, Feature,          0,0},
+    s_igloo_112             = { 14357617, 32, 24, Igloo,            0,0},
+    s_swamp_hut_112         = { 14357617, 32, 24, Swamp_Hut,        0,0},
+    s_desert_pyramid_112    = { 14357617, 32, 24, Desert_Pyramid,   0,0},
+    s_jungle_temple_112     = { 14357617, 32, 24, Jungle_Pyramid,   0,0},
     // ocean features before 1.16
-    s_ocean_ruin_115        = { 14357621, 16,  8, Ocean_Ruin,       0},
-    s_shipwreck_115         = {165745295, 15,  7, Shipwreck,        0},
+    s_ocean_ruin_115        = { 14357621, 16,  8, Ocean_Ruin,       0,0},
+    s_shipwreck_115         = {165745295, 16,  8, Shipwreck,        0,0},
     // 1.13 separated feature seeds by type
-    s_desert_pyramid        = { 14357617, 32, 24, Desert_Pyramid,   0},
-    s_igloo                 = { 14357618, 32, 24, Igloo,            0},
-    s_jungle_temple         = { 14357619, 32, 24, Jungle_Pyramid,   0},
-    s_swamp_hut             = { 14357620, 32, 24, Swamp_Hut,        0},
-    s_outpost               = {165745296, 32, 24, Outpost,          0},
-    s_village_117           = { 10387312, 32, 24, Village,          0},
-    s_village               = { 10387312, 34, 26, Village,          0},
-    s_ocean_ruin            = { 14357621, 20, 12, Ocean_Ruin,       0},
-    s_shipwreck             = {165745295, 24, 20, Shipwreck,        0},
-    s_monument              = { 10387313, 32, 27, Monument,         STRUCT_TRIANGULAR},
-    s_mansion               = { 10387319, 80, 60, Mansion,          STRUCT_TRIANGULAR},
-    s_ruined_portal         = { 34222645, 40, 25, Ruined_Portal,    0},
-    s_ruined_portal_n_117   = { 34222645, 25, 15, Ruined_Portal_N,  STRUCT_NETHER},
-    s_ancient_city          = { 20083232, 24, 16, Ancient_City,     0},
-    s_treasure              = { 10387320,  1,  1, Treasure,         STRUCT_CHUNK},
-    s_mineshaft             = {        0,  1,  1, Mineshaft,        STRUCT_CHUNK},
+    s_desert_pyramid        = { 14357617, 32, 24, Desert_Pyramid,   0,0},
+    s_igloo                 = { 14357618, 32, 24, Igloo,            0,0},
+    s_jungle_temple         = { 14357619, 32, 24, Jungle_Pyramid,   0,0},
+    s_swamp_hut             = { 14357620, 32, 24, Swamp_Hut,        0,0},
+    s_outpost               = {165745296, 32, 24, Outpost,          0,0},
+    s_village_117           = { 10387312, 32, 24, Village,          0,0},
+    s_village               = { 10387312, 34, 26, Village,          0,0},
+    s_ocean_ruin            = { 14357621, 20, 12, Ocean_Ruin,       0,0},
+    s_shipwreck             = {165745295, 24, 20, Shipwreck,        0,0},
+    s_monument              = { 10387313, 32, 27, Monument,         STRUCT_TRIANGULAR,0},
+    s_mansion               = { 10387319, 80, 60, Mansion,          STRUCT_TRIANGULAR,0},
+    s_ruined_portal         = { 34222645, 40, 25, Ruined_Portal,    0,0},
+    s_ruined_portal_n       = { 34222645, 40, 25, Ruined_Portal,    STRUCT_NETHER,0},
+    s_ruined_portal_n_117   = { 34222645, 25, 15, Ruined_Portal_N,  STRUCT_NETHER,0},
+    s_ancient_city          = { 20083232, 24, 16, Ancient_City,     0,0},
+    s_trail_ruin            = { 83469867, 34, 26, Trail_Ruin,       0,0},
+    s_treasure              = { 10387320,  1,  1, Treasure,         STRUCT_CHUNK,0},
+    s_mineshaft             = {        0,  1,  1, Mineshaft,        STRUCT_CHUNK,0},
+    s_desert_well_115       = {    30010,  1,  1, Desert_Well,      STRUCT_CHUNK, 1.f/1000},
+    s_desert_well_117       = {    40013,  1,  1, Desert_Well,      STRUCT_CHUNK, 1.f/1000},
+    s_desert_well           = {    40002,  1,  1, Desert_Well,      STRUCT_CHUNK, 1.f/1000},
+    s_geode_117             = {    20000,  1,  1, Geode,            STRUCT_CHUNK, 1.f/24},
+    s_geode                 = {    20002,  1,  1, Geode,            STRUCT_CHUNK, 1.f/24},
     // nether and end structures
-    s_fortress_115          = {        0, 16,  8, Fortress,         STRUCT_NETHER},
-    s_fortress              = { 30084232, 27, 23, Fortress,         STRUCT_NETHER},
-    s_bastion               = { 30084232, 27, 23, Bastion,          STRUCT_NETHER},
-    s_end_city              = { 10387313, 20,  9, End_City,         STRUCT_END|STRUCT_TRIANGULAR},
+    s_fortress_115          = {        0, 16,  8, Fortress,         STRUCT_NETHER,0},
+    s_fortress              = { 30084232, 27, 23, Fortress,         STRUCT_NETHER,0},
+    s_bastion               = { 30084232, 27, 23, Bastion,          STRUCT_NETHER,0},
+    s_end_city              = { 10387313, 20,  9, End_City,         STRUCT_END|STRUCT_TRIANGULAR,0},
     // for the scattered return gateways
-    s_end_gateway_115       = {    30000,  1,  1, End_Gateway,      STRUCT_END|STRUCT_CHUNK},
-    s_end_gateway_117       = {    40013,  1,  1, End_Gateway,      STRUCT_END|STRUCT_CHUNK},
-    s_end_gateway           = {    40000,  1,  1, End_Gateway,      STRUCT_END|STRUCT_CHUNK}
+    s_end_gateway_115       = {    30000,  1,  1, End_Gateway,      STRUCT_END|STRUCT_CHUNK, 700},
+    s_end_gateway_116       = {    40013,  1,  1, End_Gateway,      STRUCT_END|STRUCT_CHUNK, 700},
+    s_end_gateway_117       = {    40013,  1,  1, End_Gateway,      STRUCT_END|STRUCT_CHUNK, 1.f/700},
+    s_end_gateway           = {    40000,  1,  1, End_Gateway,      STRUCT_END|STRUCT_CHUNK, 1.f/700}
     ;
 
     switch (structureType)
@@ -114,7 +122,7 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
         return mc >= MC_1_9;
     case Village:
         *sconf = mc <= MC_1_17 ? s_village_117 : s_village;
-        return 1;
+        return mc >= MC_B1_8;
     case Ocean_Ruin:
         *sconf = mc <= MC_1_15 ? s_ocean_ruin_115 : s_ocean_ruin;
         return mc >= MC_1_13;
@@ -123,10 +131,10 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
         return mc >= MC_1_13;
     case Ruined_Portal:
         *sconf = s_ruined_portal;
-        return mc >= MC_1_16;
+        return mc >= MC_1_16_1;
     case Ruined_Portal_N:
-        *sconf = mc <= MC_1_17 ? s_ruined_portal_n_117 : s_ruined_portal;
-        return mc >= MC_1_16;
+        *sconf = mc <= MC_1_17 ? s_ruined_portal_n_117 : s_ruined_portal_n;
+        return mc >= MC_1_16_1;
     case Monument:
         *sconf = s_monument;
         return mc >= MC_1_8;
@@ -141,26 +149,40 @@ int getStructureConfig(int structureType, int mc, StructureConfig *sconf)
         return mc >= MC_1_14;
     case Ancient_City:
         *sconf = s_ancient_city;
-        return mc >= MC_1_19;
+        return mc >= MC_1_19_2;
     case Treasure:
         *sconf = s_treasure;
         return mc >= MC_1_13;
     case Mineshaft:
         *sconf = s_mineshaft;
-        return 1;
+        return mc >= MC_B1_8;
     case Fortress:
         *sconf = mc <= MC_1_15 ? s_fortress_115 : s_fortress;
-        return 1;
+        return mc >= MC_1_0;
     case Bastion:
         *sconf = s_bastion;
-        return mc >= MC_1_16;
+        return mc >= MC_1_16_1;
     case End_Gateway:
         if      (mc <= MC_1_15) *sconf = s_end_gateway_115;
+        else if (mc <= MC_1_16) *sconf = s_end_gateway_116;
         else if (mc <= MC_1_17) *sconf = s_end_gateway_117;
         else                    *sconf = s_end_gateway;
         // 1.11 and 1.12 generate gateways using a random source that passed
         // the block filling, making them much more difficult to predict
         return mc >= MC_1_13;
+    case Desert_Well:
+        if      (mc <= MC_1_15) *sconf = s_desert_well_115;
+        else if (mc <= MC_1_17) *sconf = s_desert_well_117;
+        else                    *sconf = s_desert_well;
+        // wells were introduced in 1.2, but we only support decorator features
+        // for 1.13+
+        return mc >= MC_1_13;
+    case Geode:
+        *sconf = mc <= MC_1_17 ? s_geode_117 : s_geode;
+        return mc >= MC_1_17;
+    case Trail_Ruin:
+        *sconf = s_trail_ruin;
+        return mc >= MC_1_20;
     default:
         memset(sconf, 0, sizeof(StructureConfig));
         return 0;
@@ -173,8 +195,8 @@ static inline
 void getRegPos(Pos *p, uint64_t *s, int rx, int rz, StructureConfig sc)
 {
     setSeed(s, rx*341873128712ULL + rz*132897987541ULL + *s + sc.salt);
-    p->x = (int)(((uint64_t)rx * sc.regionSize + nextInt(s, sc.chunkRange)) << 4);
-    p->z = (int)(((uint64_t)rz * sc.regionSize + nextInt(s, sc.chunkRange)) << 4);
+    p->x = ((uint64_t)rx * sc.regionSize + nextInt(s, sc.chunkRange)) << 4;
+    p->z = ((uint64_t)rz * sc.regionSize + nextInt(s, sc.chunkRange)) << 4;
 }
 
 int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ, Pos *pos)
@@ -202,6 +224,7 @@ int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ
     case Ruined_Portal:
     case Ruined_Portal_N:
     case Ancient_City:
+    case Trail_Ruin:
         *pos = getFeaturePos(sconf, seed, regX, regZ);
         return 1;
 
@@ -220,8 +243,8 @@ int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ
         return nextInt(&seed, 5) == 0;
 
     case Treasure:
-        pos->x = (int)( ((uint32_t)regX << 4) + 9 );
-        pos->z = (int)( ((uint32_t)regZ << 4) + 9 );
+        pos->x = regX * 16 + 9;
+        pos->z = regZ * 16 + 9;
         seed = regX*341873128712ULL + regZ*132897987541ULL + seed + sconf.salt;
         setSeed(&seed, seed);
         return nextFloat(&seed) < 0.01;
@@ -233,14 +256,14 @@ int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ
         if (mc >= MC_1_18) {
             *pos = getFeaturePos(sconf, seed, regX, regZ);
             return 1; // fortresses gen where bastions don't (biome dependent)
-        } else if (mc >= MC_1_16) {
+        } else if (mc >= MC_1_16_1) {
             getRegPos(pos, &seed, regX, regZ, sconf);
             return nextInt(&seed, 5) < 2;
         } else {
-            setAttemptSeed(&seed, regX << 4, regZ << 4);
+            setAttemptSeed(&seed, regX * 16, regZ * 16);
             int valid = nextInt(&seed, 3) == 0;
-            pos->x = (int)((((uint64_t)regX << 4) + nextInt(&seed,8) + 4) << 4);
-            pos->z = (int)((((uint64_t)regZ << 4) + nextInt(&seed,8) + 4) << 4);
+            pos->x = (regX * 16 + nextInt(&seed, 8) + 4) * 16;
+            pos->z = (regZ * 16 + nextInt(&seed, 8) + 4) * 16;
             return valid;
         }
 
@@ -255,14 +278,17 @@ int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ
         }
 
     case End_Gateway:
-        pos->x = (int)( ((uint32_t)regX << 4) );
-        pos->z = (int)( ((uint32_t)regZ << 4) );
+    case Desert_Well:
+    case Geode:
+        // decorator features
+        pos->x = regX * 16;
+        pos->z = regZ * 16;
         seed = getPopulationSeed(mc, seed, pos->x, pos->z);
         if (mc >= MC_1_18)
         {
             Xoroshiro xr;
             xSetSeed(&xr, seed + sconf.salt);
-            if (xNextFloat(&xr) >= 1.0/700)
+            if (xNextFloat(&xr) >= sconf.rarity)
                 return 0;
             pos->x += xNextIntJ(&xr, 16);
             pos->z += xNextIntJ(&xr, 16);
@@ -270,11 +296,11 @@ int getStructurePos(int structureType, int mc, uint64_t seed, int regX, int regZ
         else
         {
             setSeed(&seed, seed + sconf.salt);
-            if (mc >= MC_1_17) {
-                if (nextFloat(&seed) >= 1.0/700)
+            if (sconf.rarity < 1.0) {
+                if (nextFloat(&seed) >= sconf.rarity)
                     return 0;
             } else {
-                if (nextInt(&seed, 700) != 0)
+                if (nextInt(&seed, (int)sconf.rarity) != 0)
                     return 0;
             }
             pos->x += nextInt(&seed, 16);
@@ -315,8 +341,8 @@ int getMineshafts(int mc, uint64_t seed, int cx0, int cz0, int cx1, int cz1,
                 {
                     if (out && n < nout)
                     {
-                        out[n].x = (int)((uint32_t)i << 4);
-                        out[n].z = (int)((uint32_t)j << 4);
+                        out[n].x = i * 16;
+                        out[n].z = j * 16;
                     }
                     n++;
                 }
@@ -334,8 +360,8 @@ int getMineshafts(int mc, uint64_t seed, int cx0, int cz0, int cx1, int cz1,
                     {
                         if (out && n < nout)
                         {
-                            out[n].x = (int)((uint32_t)i << 4);
-                            out[n].z = (int)((uint32_t)j << 4);
+                            out[n].x = i * 16;
+                            out[n].z = j * 16;
                         }
                         n++;
                     }
@@ -379,15 +405,15 @@ Pos locateBiome(
             for (i = -radius; i <= radius; i++)
             {
                 // emulate order-dependent biome generation MC-241546
-                //id = getBiomeAt(g, 4, x+i, y, z+j);
+                //int id = getBiomeAt(g, 4, x+i, y, z+j);
                 int id = sampleBiomeNoise(&g->bn, NULL, x+i, y, z+j, &dat, 0);
                 if (!id_matches(id, validB, validM))
                     continue;
 
                 if (found == 0 || nextInt(rng, found+1) == 0)
                 {
-                    out.x = (x+i) << 2;
-                    out.z = (z+j) << 2;
+                    out.x = (x+i) * 4;
+                    out.z = (z+j) * 4;
                 }
                 found++;
             }
@@ -414,8 +440,8 @@ Pos locateBiome(
                     continue;
                 if (found == 0 || nextInt(rng, j++) == 0)
                 {
-                    out.x = (x1 + i%width) << 2;
-                    out.z = (z1 + i/width) << 2;
+                    out.x = (x1 + i%width) * 4;
+                    out.z = (z1 + i/width) * 4;
                     found = 1;
                 }
             }
@@ -429,8 +455,8 @@ Pos locateBiome(
                     continue;
                 if (found == 0 || nextInt(rng, found + 1) == 0)
                 {
-                    out.x = (x1 + i%width) << 2;
-                    out.z = (z1 + i/width) << 2;
+                    out.x = (x1 + i%width) * 4;
+                    out.z = (z1 + i/width) * 4;
                     ++found;
                 }
             }
@@ -468,7 +494,7 @@ int areBiomesViable(
     for (i = 0; i < 4; i++)
     {
         id = getBiomeAt(g, 4, corners[i].x, y, corners[i].z);
-        if (!id_matches(id, validB, validM))
+        if (id < 0 || !id_matches(id, validB, validM))
             goto L_no;
     }
     if (approx >= 1) goto L_yes;
@@ -484,7 +510,7 @@ int areBiomesViable(
                     id = sampleBiomeNoise(&g->bn, NULL, x1+i, y, z1+j, &dat, 0);
                 else
                     id = getBiomeAt(g, 4, x1+i, y, z1+j);
-                if (!id_matches(id, validB, validM))
+                if (id < 0 || !id_matches(id, validB, validM))
                     goto L_no;
             }
         }
@@ -497,7 +523,7 @@ int areBiomesViable(
             goto L_no;
         for (i = 0; i < sx*sz; i++)
         {
-            if (!id_matches(ids[i], validB, validM))
+            if (id < 0 || !id_matches(ids[i], validB, validM))
                 goto L_no;
         }
     }
@@ -523,13 +549,20 @@ int isStrongholdBiome(int mc, int id)
         return 0;
     switch (id)
     {
+    case plains:
+    case mushroom_fields:
+    case taiga_hills:
+        return mc >= MC_1_7;
     case swamp:
+        return mc <= MC_1_6;
     case river:
     case frozen_river:
     case beach:
     case snowy_beach:
     case swamp_hills:
         return 0;
+    case mushroom_field_shore:
+        return mc >= MC_1_13;
     case stone_shore:
         return mc <= MC_1_17;
     case bamboo_jungle:
@@ -558,8 +591,8 @@ Pos initFirstStronghold(StrongholdIter *sh, int mc, uint64_t s48)
     else
         dist = (1.25 + nextDouble(&rnds)) * 32.0;
 
-    p.x = ((int)round(cos(angle) * dist) << 4) + 8;
-    p.z = ((int)round(sin(angle) * dist) << 4) + 8;
+    p.x = ((int)round(cos(angle) * dist) * 16) + 8;
+    p.z = ((int)round(sin(angle) * dist) * 16) + 8;
 
     if (sh)
     {
@@ -590,8 +623,33 @@ int nextStronghold(StrongholdIter *sh, const Generator *g)
             validM |= (1ULL << i);
     }
 
-    sh->pos = locateBiome(g, sh->nextapprox.x, 0, sh->nextapprox.z, 112,
-        validB, validM, &sh->rnds, NULL);
+    if (sh->mc > MC_1_19_2)
+    {
+        if (g)
+        {
+            uint64_t lbr = sh->rnds;
+            setSeed(&lbr, nextLong(&sh->rnds));
+            sh->pos = locateBiome(g, sh->nextapprox.x, 0, sh->nextapprox.z, 112,
+                validB, validM, &lbr, NULL);
+        }
+        else
+        {
+            nextLong(&sh->rnds);
+            sh->pos = sh->nextapprox;
+        }
+    }
+    else if (sh->mc >= MC_B1_8)
+    {
+        sh->pos = locateBiome(g, sh->nextapprox.x, 0, sh->nextapprox.z, 112,
+            validB, validM, &sh->rnds, NULL);
+    }
+    else
+    {
+        return 0;
+    }
+    // staircase is located at (4, 4) in chunk
+    sh->pos.x = (sh->pos.x & ~15) + 4;
+    sh->pos.z = (sh->pos.z & ~15) + 4;
 
     sh->ringidx++;
     sh->angle += 2 * PI / sh->ringmax;
@@ -616,132 +674,13 @@ int nextStronghold(StrongholdIter *sh, const Generator *g)
         sh->dist = (1.25 + nextDouble(&sh->rnds)) * 32.0;
     }
 
-    sh->nextapprox.x = ((int)round(cos(sh->angle) * sh->dist) << 4) + 8;
-    sh->nextapprox.z = ((int)round(sin(sh->angle) * sh->dist) << 4) + 8;
+    sh->nextapprox.x = ((int)round(cos(sh->angle) * sh->dist) * 16) + 8;
+    sh->nextapprox.z = ((int)round(sin(sh->angle) * sh->dist) * 16) + 8;
     sh->index++;
 
     return (sh->mc >= MC_1_9 ? 128 : 3) - (sh->index-1);
 }
 
-
-static double getGrassProbability(uint64_t seed, int biome, int x, int z)
-{
-    (void) seed, (void) biome, (void) x, (void) z;
-    // TODO: Use ChunkGeneratorOverworld.generateHeightmap for better estimate.
-    // TODO: Try to determine the actual probabilities and build a statistic.
-    switch (biome)
-    {
-    case plains:                        return 1.0;
-    case mountains:                     return 0.8; // height dependent
-    case forest:                        return 1.0;
-    case taiga:                         return 1.0;
-    case swamp:                         return 0.3; // height dependent
-    case river:                         return 0.15;
-    case beach:                         return 0.0;
-    case snowy_tundra:                  return 0.02;
-    case snowy_mountains:               return 0.02;
-    case wooded_hills:                  return 1.0;
-    case taiga_hills:                   return 1.0;
-    case mountain_edge:                 return 1.0; // height dependent
-    case jungle:                        return 1.0;
-    case jungle_hills:                  return 1.0;
-    case jungle_edge:                   return 1.0;
-    case birch_forest:                  return 1.0;
-    case birch_forest_hills:            return 1.0;
-    case dark_forest:                   return 0.9;
-    case snowy_taiga:                   return 0.1; // below trees
-    case snowy_taiga_hills:             return 0.1; // below trees
-    case giant_tree_taiga:              return 0.6;
-    case giant_tree_taiga_hills:        return 0.6;
-    case wooded_mountains:              return 0.2; // height dependent
-    case savanna:                       return 1.0;
-    case savanna_plateau:               return 0.9;
-    case wooded_badlands_plateau:       return 0.0; // height dependent
-    case badlands_plateau:              return 0.0; // height dependent
-
-    case sunflower_plains:              return 1.0;
-    case gravelly_mountains:            return 0.2;
-    case flower_forest:                 return 1.0;
-    case taiga_mountains:               return 1.0;
-    case swamp_hills:                   return 0.9;
-    case modified_jungle:               return 1.0;
-    case modified_jungle_edge:          return 1.0;
-    case tall_birch_forest:             return 1.0;
-    case tall_birch_hills:              return 1.0;
-    case dark_forest_hills:             return 0.9;
-    case snowy_taiga_mountains:         return 0.1;
-    case giant_spruce_taiga:            return 0.6;
-    case giant_spruce_taiga_hills:      return 0.6;
-    case modified_gravelly_mountains:   return 0.2;
-    case shattered_savanna:             return 1.0;
-    case shattered_savanna_plateau:     return 1.0;
-    case bamboo_jungle:                 return 0.4;
-    case bamboo_jungle_hills:           return 0.4;
-    // NOTE: in rare circumstances you can get also get grassy islands that are
-    // completely in ocean variants...
-    default: return 0;
-    }
-}
-
-
-static int findServerSpawn(const Generator *g, int chunkX, int chunkZ,
-    double *bx, double *bz, double *bn, double *accum)
-{
-    int x, z;
-
-    if (g->mc >= MC_1_18)
-    {
-        // It seems the search for spawn in 1.18 looks for a block with a
-        // solid top and a height above sea level. We can approximate this by
-        // looking for a non-ocean biome at y=63 ~> y=16 at scale 1:4.
-        for (x = 0; x < 4; x++)
-        {
-            for (z = 0; z < 4; z++)
-            {
-                int x4 = (chunkX << 2) + x, z4 = (chunkZ << 2) + z;
-                int id = getBiomeAt(g, 4, x4, 16, z4);
-                if (isOceanic(id) || id == river)
-                    continue;
-                *bx = x4 << 2;
-                *bz = z4 << 2;
-                *bn = 1;
-                return 1;
-            }
-        }
-        return 0;
-    }
-    else
-    {
-        Range r = {1, chunkX << 4, chunkZ << 4, 16, 16, 0, 1};
-        int *area = allocCache(g, r);
-        genBiomes(g, area, r);
-
-        for (x = 0; x < 16; x++)
-        {
-            for (z = 0; z < 16; z++)
-            {
-                Pos pos = {r.x+x, r.z+z};
-                int id = area[z*16 + x];
-                double gp = getGrassProbability(g->mc, id, pos.x, pos.z);
-                if (gp == 0)
-                    continue;
-
-                *bx += *accum * gp * pos.x;
-                *bz += *accum * gp * pos.z;
-                *bn += *accum * gp;
-
-                *accum *= 1 - gp;
-                if (*accum < 0.001)
-                {
-                    free(area);
-                    return 1;
-                }
-            }
-        }
-        free(area);
-        return 0;
-    }
-}
 
 static
 uint64_t getSpawnDist(const Generator *g, int x, int z)
@@ -776,29 +715,27 @@ uint64_t getSpawnDist(const Generator *g, int x, int z)
 static
 void findFittest(const Generator *g, Pos *pos, uint64_t *fitness, double maxrad, double step)
 {
-    double rad = step, ang = 0;
+    double rad, ang;
     Pos p = *pos;
-    while (rad <= maxrad)
+    for (rad = step; rad <= maxrad; rad += step)
     {
-        int x = p.x + (int)(sin(ang) * rad);
-        int z = p.z + (int)(cos(ang) * rad);
-        // calc fitness
-        double d = ((double)x*x + (double)z*z) / (2500*2500);
-        uint64_t fit = (uint64_t)(d*d * 1e8);
-        // calculate the distance to the noise points for spawn
-        fit += getSpawnDist(g, x, z);
-        if (fit < *fitness)
+        for (ang = 0; ang <= PI*2; ang += step/rad)
         {
-            pos->x = x;
-            pos->z = z;
-            *fitness = fit;
+            int x = p.x + (int)(sin(ang) * rad);
+            int z = p.z + (int)(cos(ang) * rad);
+            // Calcuate portion of fitness dependent on distance from origin
+            double d = ((double)x*x + (double)z*z) / (2500*2500);
+            uint64_t fit = (uint64_t)(d*d * 1e8);
+            // Calculate portion of fitness dependent on climate values
+            fit += getSpawnDist(g, x, z);
+            // Then update pos and fitness if combined total is lower/better
+            if (fit < *fitness)
+            {
+                pos->x = x;
+                pos->z = z;
+                *fitness = fit;
+            }
         }
-
-        ang += step / rad;
-        if (ang <= PI*2)
-            continue;
-        ang = 0;
-        rad += step;
     }
 }
 
@@ -810,13 +747,13 @@ Pos findFittestPos(const Generator *g)
     findFittest(g, &spawn, &fitness, 2048.0, 512.0);
     findFittest(g, &spawn, &fitness, 512.0, 32.0);
     // center of chunk
-    spawn.x = ((spawn.x >> 4) << 4) + 8;
-    spawn.z = ((spawn.z >> 4) << 4) + 8;
+    spawn.x = (spawn.x & ~15) + 8;
+    spawn.z = (spawn.z & ~15) + 8;
     return spawn;
 }
 
 // valid spawn biomes up to 1.17
-static const uint64_t g_spawn_biomes =
+static const uint64_t g_spawn_biomes_17 =
     (1ULL << forest) |
     (1ULL << plains) |
     (1ULL << taiga) |
@@ -825,50 +762,93 @@ static const uint64_t g_spawn_biomes =
     (1ULL << jungle) |
     (1ULL << jungle_hills);
 
-Pos getSpawn(const Generator *g)
-{
-    Pos spawn;
-    int found;
-    int i;
 
-    uint64_t rnd = 0;
-    if (g->mc <= MC_1_17)
+Pos estimateSpawn(const Generator *g, uint64_t *rng)
+{
+    Pos spawn = {0, 0};
+
+    if (g->mc <= MC_B1_7)
     {
-        setSeed(&rnd, g->seed);
-        spawn = locateBiome(g, 0, 63, 0, 256, g_spawn_biomes, 0, &rnd, &found);
+        // finds a random sandblock (location is not fixed)
+        return spawn;
+    }
+    else if (g->mc <= MC_1_17)
+    {
+        int found;
+        uint64_t spawn_biomes = g_spawn_biomes_17;
+        if (g->mc <= MC_1_0)
+            spawn_biomes = (1ULL << forest) | (1ULL << swamp) |(1ULL << taiga);
+        uint64_t s;
+        setSeed(&s, g->seed);
+        spawn = locateBiome(g, 0, 63, 0, 256, spawn_biomes, 0, &s, &found);
         if (!found)
-        {
             spawn.x = spawn.z = 8;
-        }
+        if (rng)
+            *rng = s;
     }
     else
     {
         spawn = findFittestPos(g);
     }
 
-    double accum = 1;
-    double bx = 0;
-    double bz = 0;
-    double bn = 0;
-    double gp;
+    return spawn;
+}
 
-    if (g->mc >= MC_1_13)
+Pos getSpawn(const Generator *g)
+{
+    uint64_t rng;
+    Pos spawn = estimateSpawn(g, &rng);
+    int i, j, k, u, v, cx0, cz0;
+    uint32_t ii, jj;
+
+    if (g->mc <= MC_B1_7)
+        return spawn;
+
+    SurfaceNoise sn;
+    initSurfaceNoise(&sn, DIM_OVERWORLD, g->seed);
+
+    if (g->mc <= MC_1_12)
     {
-        int j, k, u, v;
-        j = k = u = v = 0;
+        for (i = 0; i < 1000; i++)
+        {
+            float y;
+            int id, grass = 0;
+            mapApproxHeight(&y, &id, g, &sn, spawn.x >> 2, spawn.z >> 2, 1, 1);
+            getBiomeDepthAndScale(id, 0, 0, &grass);
+            if (grass > 0 && y >= grass)
+                break;
+            spawn.x += nextInt(&rng, 64) - nextInt(&rng, 64);
+            spawn.z += nextInt(&rng, 64) - nextInt(&rng, 64);
+        }
+    }
+    else if (g->mc <= MC_1_17)
+    {
+        j = k = u = 0;
+        v = -1;
         for (i = 0; i < 1024; i++)
         {
             if (j > -16 && j <= 16 && k > -16 && k <= 16)
             {
-                if (findServerSpawn(g, (spawn.x>>4)+j, (spawn.z>>4)+k,
-                    &bx, &bz, &bn, &accum))
+                // find server spawn point in chunk
+                float y[16];
+                int ids[16];
+                cx0 = (spawn.x & ~15) + j * 16; // start of chunk
+                cz0 = (spawn.z & ~15) + k * 16;
+                mapApproxHeight(y, ids, g, &sn, cx0 >> 2, cz0 >> 2, 4, 4);
+                for (ii = 0; ii < 4; ii++)
                 {
-                    spawn.x = (int) round(bx / bn);
-                    spawn.z = (int) round(bz / bn);
-                    return spawn;
+                    for (jj = 0; jj < 4; jj++)
+                    {
+                        int grass = 0;
+                        getBiomeDepthAndScale(ids[jj*4+ii], 0, 0, &grass);
+                        if (grass <= 0 || y[jj*4+ii] < grass)
+                            continue;
+                        spawn.x = cx0 + ii * 4;
+                        spawn.z = cz0 + jj * 4;
+                        return spawn;
+                    }
                 }
             }
-
             if (j == k || (j < 0 && j == -k) || (j > 0 && j == 1 - k))
             {
                 int tmp = u;
@@ -878,57 +858,52 @@ Pos getSpawn(const Generator *g)
             j += u;
             k += v;
         }
+        // chunk center
+        spawn.x = (spawn.x & ~15) + 8;
+        spawn.z = (spawn.z & ~15) + 8;
     }
     else
     {
-        for (i = 0; i < 1000; i++)
+        j = k = u = 0;
+        v = -1;
+        for (i = 0; i < 121; i++)
         {
-            int biome = getBiomeAt(g, 1, spawn.x, 0, spawn.z);
-            gp = getGrassProbability(g->seed, biome, spawn.x, spawn.z);
-
-            bx += accum * gp * spawn.x;
-            bz += accum * gp * spawn.z;
-            bn += accum * gp;
-
-            accum *= 1 - gp;
-            if (accum < 0.001)
+            if (j >= -5 && j <= 5 && k >= -5 && k <= 5)
             {
-                spawn.x = (int) round(bx / bn);
-                spawn.z = (int) round(bz / bn);
-                break;
+                // find server spawn point in chunk
+                cx0 = (spawn.x & ~15) + j * 16;
+                cz0 = (spawn.z & ~15) + k * 16;
+                for (ii = 0; ii < 4; ii++)
+                {
+                    for (jj = 0; jj < 4; jj++)
+                    {
+                        float y;
+                        int id;
+                        int x = cx0 + ii * 4;
+                        int z = cz0 + jj * 4;
+                        mapApproxHeight(&y, &id, g, &sn, x >> 2, z >> 2, 1, 1);
+                        if (y > 63 || id == frozen_ocean ||
+                            id == deep_frozen_ocean || id == frozen_river)
+                        {
+                            spawn.x = x;
+                            spawn.z = z;
+                            return spawn;
+                        }
+                    }
+                }
             }
-
-            spawn.x += nextInt(&rnd, 64) - nextInt(&rnd, 64);
-            spawn.z += nextInt(&rnd, 64) - nextInt(&rnd, 64);
+            if (j == k || (j < 0 && j == -k) || (j > 0 && j == 1 - k))
+            {
+                int tmp = u;
+                u = -v;
+                v = tmp;
+            }
+            j += u;
+            k += v;
         }
-    }
-
-    return spawn;
-}
-
-Pos estimateSpawn(const Generator *g)
-{
-    Pos spawn;
-
-    if (g->mc <= MC_1_17)
-    {
-        int found;
-        uint64_t rnd;
-        setSeed(&rnd, g->seed);
-        spawn = locateBiome(g, 0, 63, 0, 256, g_spawn_biomes, 0, &rnd, &found);
-        if (!found)
-        {
-            spawn.x = spawn.z = 8;
-        }
-        if (g->mc >= MC_1_13)
-        {
-            spawn.x &= ~0xf;
-            spawn.z &= ~0xf;
-        }
-    }
-    else
-    {
-        spawn = findFittestPos(g);
+        // chunk center
+        spawn.x = (spawn.x & ~15) + 8;
+        spawn.z = (spawn.z & ~15) + 8;
     }
 
     return spawn;
@@ -956,38 +931,57 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
         return biomeID == swamp;
 
     case Igloo:
-        if (mc < MC_1_9) return 0;
+        if (mc <= MC_1_8) return 0;
         return biomeID == snowy_tundra || biomeID == snowy_taiga || biomeID == snowy_slopes;
 
     case Ocean_Ruin:
-        if (mc < MC_1_13) return 0;
+        if (mc <= MC_1_12) return 0;
         return isOceanic(biomeID);
 
     case Shipwreck:
-        if (mc < MC_1_13) return 0;
+        if (mc <= MC_1_12) return 0;
         return isOceanic(biomeID) || biomeID == beach || biomeID == snowy_beach;
 
     case Ruined_Portal:
     case Ruined_Portal_N:
-        return mc >= MC_1_16;
+        return mc >= MC_1_16_1;
 
     case Ancient_City:
-        if (mc < MC_1_19) return 0;
+        if (mc <= MC_1_18) return 0;
         return biomeID == deep_dark;
 
+    case Trail_Ruin:
+        if (mc <= MC_1_19) return 0;
+        else {
+            switch (biomeID) {
+            case taiga:
+            case snowy_taiga:
+            case old_growth_pine_taiga:
+            case old_growth_spruce_taiga:
+            case old_growth_birch_forest:
+            case jungle:
+                return 1;
+            default:
+                return 0;
+            }
+        }
+
     case Treasure:
-        if (mc < MC_1_13) return 0;
+        if (mc <= MC_1_12) return 0;
         return biomeID == beach || biomeID == snowy_beach;
 
     case Mineshaft:
         return isOverworld(mc, biomeID);
 
+    case Desert_Well:
+        return biomeID == desert;
+
     case Monument:
-        if (mc < MC_1_8) return 0;
+        if (mc <= MC_1_7) return 0;
         return isDeepOcean(biomeID);
 
     case Outpost:
-        if (mc < MC_1_14) return 0;
+        if (mc <= MC_1_13) return 0;
         if (mc >= MC_1_18) {
             switch (biomeID) {
             case desert:
@@ -1001,6 +995,7 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
             case stony_peaks:
             case snowy_slopes:
             case grove:
+            case cherry_grove:
                 return 1;
             default:
                 return 0;
@@ -1019,7 +1014,7 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
         return 0;
 
     case Mansion:
-        if (mc < MC_1_11) return 0;
+        if (mc <= MC_1_10) return 0;
         return biomeID == dark_forest || biomeID == dark_forest_hills;
 
     case Fortress:
@@ -1028,16 +1023,16 @@ int isViableFeatureBiome(int mc, int structureType, int biomeID)
                 biomeID == basalt_deltas);
 
     case Bastion:
-        if (mc < MC_1_16) return 0;
+        if (mc <= MC_1_15) return 0;
         return (biomeID == nether_wastes || biomeID == soul_sand_valley ||
                 biomeID == warped_forest || biomeID == crimson_forest);
 
     case End_City:
-        if (mc < MC_1_9) return 0;
+        if (mc <= MC_1_8) return 0;
         return biomeID == end_midlands || biomeID == end_highlands;
 
     case End_Gateway:
-        if (mc < MC_1_13) return 0;
+        if (mc <= MC_1_12) return 0;
         return biomeID == end_highlands;
 
     default:
@@ -1067,6 +1062,7 @@ static int mapViableBiome(const Layer * l, int * out, int x, int z, int w, int h
             switch (styp)
             {
             case Desert_Pyramid:
+            case Desert_Well:
                 if (biomeID == desert || isMesa(biomeID))
                     return 0;
                 break;
@@ -1132,6 +1128,7 @@ static int mapViableShore(const Layer * l, int * out, int x, int z, int w, int h
             case Monument:
             case Mansion:
             case Treasure:
+            case Desert_Well:
                 if (isViableFeatureBiome(mc, styp, biomeID))
                     return 0;
                 break;
@@ -1186,7 +1183,7 @@ int isViableStructurePos(int structureType, Generator *g, int x, int z, uint32_t
     {
         if (structureType == Fortress && g->mc <= MC_1_17)
             return 1;
-        if (g->mc < MC_1_16)
+        if (g->mc <= MC_1_15)
             return 0;
         if (structureType == Ruined_Portal_N)
             return 1;
@@ -1196,8 +1193,8 @@ int isViableStructurePos(int structureType, Generator *g, int x, int z, uint32_t
             if (!getStructureConfig(Fortress, g->mc, &sc))
                 return 0;
             Pos rp = {
-                (int)chunkX / sc.regionSize - (x < 0),
-                (int)chunkZ / sc.regionSize - (z < 0)
+                floordiv(x, sc.regionSize << 4),
+                floordiv(z, sc.regionSize << 4)
             };
             if (!getStructurePos(Bastion, g->mc, g->seed, rp.x, rp.z, &rp))
                 return 1;
@@ -1208,15 +1205,15 @@ int isViableStructurePos(int structureType, Generator *g, int x, int z, uint32_t
         {
             StructureVariant sv;
             getVariant(&sv, Bastion, g->mc, g->seed, x, z, -1);
-            sampleX = ((chunkX << 5) + 2*sv.x + sv.sx) / 2 >> 2;
-            sampleZ = ((chunkZ << 5) + 2*sv.z + sv.sz) / 2 >> 2;
-            if (g->mc >= MC_1_19)
+            sampleX = (chunkX*32 + 2*sv.x + sv.sx-1) / 2 >> 2;
+            sampleZ = (chunkZ*32 + 2*sv.z + sv.sz-1) / 2 >> 2;
+            if (g->mc >= MC_1_19_2)
                 sampleY = 33 >> 2; // nether biomes don't actually vary in Y
         }
         else
         {
-            sampleX = (chunkX << 2) + 2;
-            sampleZ = (chunkZ << 2) + 2;
+            sampleX = (chunkX * 4) + 2;
+            sampleZ = (chunkZ * 4) + 2;
         }
         id = getBiomeAt(g, 4, sampleX, sampleY, sampleZ);
         return isViableFeatureBiome(g->mc, structureType, id);
@@ -1226,10 +1223,10 @@ int isViableStructurePos(int structureType, Generator *g, int x, int z, uint32_t
         switch (structureType)
         {
         case End_City:
-            if (g->mc < MC_1_9) return 0;
+            if (g->mc <= MC_1_8) return 0;
             break;
         case End_Gateway:
-            if (g->mc < MC_1_13) return 0;
+            if (g->mc <= MC_1_12) return 0;
             break;
         default:
             return 0;
@@ -1260,30 +1257,52 @@ int isViableStructurePos(int structureType, Generator *g, int x, int z, uint32_t
 
     switch (structureType)
     {
+    case Trail_Ruin:
+        if (g->mc <= MC_1_19) goto L_not_viable;
+        goto L_feature;
     case Ocean_Ruin:
     case Shipwreck:
     case Treasure:
-        if (g->mc < MC_1_13) goto L_not_viable;
+        if (g->mc <= MC_1_12) goto L_not_viable;
         goto L_feature;
     case Igloo:
-        if (g->mc < MC_1_9) goto L_not_viable;
+        if (g->mc <= MC_1_8) goto L_not_viable;
         goto L_feature;
     case Desert_Pyramid:
     case Jungle_Pyramid:
     case Swamp_Hut:
 L_feature:
-        if (g->mc >= MC_1_16)
+        if (g->mc <= MC_1_15)
         {
-            if (g->mc < MC_1_18)
-                g->entry = &g->ls.layers[L_RIVER_MIX_4];
-            sampleX = (chunkX << 2) + 2;
-            sampleZ = (chunkZ << 2) + 2;
+            g->entry = &g->ls.layers[L_VORONOI_1];
+            sampleX = chunkX * 16 + 9;
+            sampleZ = chunkZ * 16 + 9;
         }
         else
         {
+            if (g->mc <= MC_1_17)
+                g->entry = &g->ls.layers[L_RIVER_MIX_4];
+            sampleX = chunkX * 4 + 2;
+            sampleZ = chunkZ * 4 + 2;
+        }
+        id = getBiomeAt(g, 0, sampleX, 319>>2, sampleZ);
+        if (id < 0 || !isViableFeatureBiome(g->mc, structureType, id))
+            goto L_not_viable;
+        goto L_viable;
+
+    case Desert_Well:
+        if (g->mc <= MC_1_15)
+        {
             g->entry = &g->ls.layers[L_VORONOI_1];
-            sampleX = (chunkX << 4) + 9;
-            sampleZ = (chunkZ << 4) + 9;
+            sampleX = x;
+            sampleZ = z;
+        }
+        else
+        {
+            if (g->mc <= MC_1_17)
+                g->entry = &g->ls.layers[L_RIVER_MIX_4];
+            sampleX = x >> 2;
+            sampleZ = z >> 2;
         }
         id = getBiomeAt(g, 0, sampleX, 319>>2, sampleZ);
         if (id < 0 || !isViableFeatureBiome(g->mc, structureType, id))
@@ -1297,14 +1316,14 @@ L_feature:
             {   // exclusively in MC_1_15, villages used the same biome check
                 // as other structures
                 g->entry = &g->ls.layers[L_VORONOI_1];
-                sampleX = (chunkX << 4) + 9;
-                sampleZ = (chunkZ << 4) + 9;
+                sampleX = chunkX * 16 + 9;
+                sampleZ = chunkZ * 16 + 9;
             }
             else
             {
                 g->entry = &g->ls.layers[L_RIVER_MIX_4];
-                sampleX = (chunkX << 2) + 2;
-                sampleZ = (chunkZ << 2) + 2;
+                sampleX = chunkX * 4 + 2;
+                sampleZ = chunkZ * 4 + 2;
             }
             id = getBiomeAt(g, 0, sampleX, 0, sampleZ);
             if (id < 0 || !isViableFeatureBiome(g->mc, structureType, id))
@@ -1315,8 +1334,8 @@ L_feature:
             {   // before MC_1_10 villages did not spread into invalid biomes,
                 // which could cause them to fail to generate on the first
                 // check at block (2, 2) in the starting chunk
-                sampleX = (chunkX << 4) + 2;
-                sampleZ = (chunkZ << 4) + 2;
+                sampleX = chunkX * 16 + 2;
+                sampleZ = chunkZ * 16 + 2;
                 id = getBiomeAt(g, 1, sampleX, 0, sampleZ);
                 if (id < 0 || !isViableFeatureBiome(g->mc, structureType, id))
                     goto L_not_viable;
@@ -1333,8 +1352,8 @@ L_feature:
                     continue;
                 StructureVariant sv;
                 getVariant(&sv, Village, g->mc, g->seed, x, z, vv[i]);
-                sampleX = ((chunkX << 5) + 2*sv.x + sv.sx) / 2 >> 2;
-                sampleZ = ((chunkZ << 5) + 2*sv.z + sv.sz) / 2 >> 2;
+                sampleX = (chunkX*32 + 2*sv.x + sv.sx-1) / 2 >> 2;
+                sampleZ = (chunkZ*32 + 2*sv.z + sv.sz-1) / 2 >> 2;
                 sampleY = 319 >> 2;
                 id = getBiomeAt(g, 0, sampleX, sampleY, sampleZ);
                 if (id == vv[i] || (id == meadow && vv[i] == plains)) {
@@ -1347,7 +1366,7 @@ L_feature:
 
     case Outpost:
     {
-        if (g->mc < MC_1_14)
+        if (g->mc <= MC_1_13)
             goto L_not_viable;
         uint64_t rng = g->seed;
         setAttemptSeed(&rng, chunkX, chunkZ);
@@ -1359,10 +1378,10 @@ L_feature:
             goto L_not_viable;
         int cx0 = (chunkX-10), cx1 = (chunkX+10);
         int cz0 = (chunkZ-10), cz1 = (chunkZ+10);
-        int rx0 = cx0 / vilconf.regionSize - (cx0 < 0);
-        int rx1 = cx1 / vilconf.regionSize - (cx1 < 0);
-        int rz0 = cz0 / vilconf.regionSize - (cz0 < 0);
-        int rz1 = cz1 / vilconf.regionSize - (cz1 < 0);
+        int rx0 = floordiv(cx0, vilconf.regionSize);
+        int rx1 = floordiv(cx1, vilconf.regionSize);
+        int rz0 = floordiv(cz0, vilconf.regionSize);
+        int rz1 = floordiv(cz1, vilconf.regionSize);
         int rx, rz;
         for (rz = rz0; rz <= rz1; rz++)
         {
@@ -1372,11 +1391,10 @@ L_feature:
                 int cx = p.x >> 4, cz = p.z >> 4;
                 if (cx >= cx0 && cx <= cx1 && cz >= cz0 && cz <= cz1)
                 {
-                    if (g->mc >= MC_1_16)
+                    if (g->mc >= MC_1_16_1)
                         goto L_not_viable;
                     if (isViableStructurePos(Village, g, p.x, p.z, 0))
                         goto L_not_viable;
-                    goto L_viable;
                 }
             }
         }
@@ -1390,20 +1408,20 @@ L_feature:
                 case 3: sampleX = +15; sampleZ = -15; break;
                 default: return 0; // unreachable
             }
-            sampleX = ((chunkX << 5) + sampleX) / 2 >> 2;
-            sampleZ = ((chunkZ << 5) + sampleZ) / 2 >> 2;
+            sampleX = (chunkX * 32 + sampleX) / 2 >> 2;
+            sampleZ = (chunkZ * 32 + sampleZ) / 2 >> 2;
         }
-        else if (g->mc >= MC_1_16)
+        else if (g->mc >= MC_1_16_1)
         {
             g->entry = &g->ls.layers[L_RIVER_MIX_4];
-            sampleX = (chunkX << 2) + 2;
-            sampleZ = (chunkZ << 2) + 2;
+            sampleX = chunkX * 4 + 2;
+            sampleZ = chunkZ * 4 + 2;
         }
         else
         {
             g->entry = &g->ls.layers[L_VORONOI_1];
-            sampleX = (chunkX << 4) + 9;
-            sampleZ = (chunkZ << 4) + 9;
+            sampleX = chunkX * 16 + 9;
+            sampleZ = chunkZ * 16 + 9;
         }
         id = getBiomeAt(g, 0, sampleX, 319>>2, sampleZ);
         if (id < 0 || !isViableFeatureBiome(g->mc, structureType, id))
@@ -1412,11 +1430,11 @@ L_feature:
     }
 
     case Monument:
-        if (g->mc < MC_1_8)
+        if (g->mc <= MC_1_7)
             goto L_not_viable;
         else if (g->mc == MC_1_8)
         {   // In 1.8 monuments require only a single deep ocean block.
-            id = getBiomeAt(g, 1, (chunkX << 4) + 8, 0, (chunkZ << 4) + 8);
+            id = getBiomeAt(g, 1, chunkX * 16 + 8, 0, chunkZ * 16 + 8);
             if (id < 0 || !isDeepOcean(id))
                 goto L_not_viable;
         }
@@ -1428,8 +1446,8 @@ L_feature:
             if (id < 0 || !isDeepOcean(id))
                 goto L_not_viable;
         }
-        sampleX = (chunkX << 4) + 8;
-        sampleZ = (chunkZ << 4) + 8;
+        sampleX = chunkX * 16 + 8;
+        sampleZ = chunkZ * 16 + 8;
         if (g->mc >= MC_1_9 && g->mc <= MC_1_17)
         {   // check for deep ocean center
             if (!areBiomesViable(g, sampleX, 63, sampleZ, 16, g_monument_biomes2, 0, approx))
@@ -1446,12 +1464,12 @@ L_feature:
         goto L_not_viable;
 
     case Mansion:
-        if (g->mc < MC_1_11)
+        if (g->mc <= MC_1_10)
             goto L_not_viable;
         if (g->mc <= MC_1_17)
         {
-            sampleX = (chunkX << 4) + 8;
-            sampleZ = (chunkZ << 4) + 8;
+            sampleX = chunkX * 16 + 8;
+            sampleZ = chunkZ * 16 + 8;
             uint64_t b = (1ULL << dark_forest);
             uint64_t m = (1ULL << (dark_forest_hills-128));
             if (!areBiomesViable(g, sampleX, 0, sampleZ, 32, b, m, approx))
@@ -1463,8 +1481,8 @@ L_feature:
             // This minimum height has to be y >= 60. The biome check is done
             // at the center position at that height.
             // TODO: get surface height
-            sampleX = (chunkX << 4) + 7;
-            sampleZ = (chunkZ << 4) + 7;
+            sampleX = chunkX * 16 + 7;
+            sampleZ = chunkZ * 16 + 7;
             id = getBiomeAt(g, 4, sampleX>>2, 319>>2, sampleZ>>2);
             if (id < 0 || !isViableFeatureBiome(g->mc, structureType, id))
                 goto L_not_viable;
@@ -1473,18 +1491,23 @@ L_feature:
 
     case Ruined_Portal:
     case Ruined_Portal_N:
-        if (g->mc >= MC_1_16)
-            goto L_viable;
-        goto L_not_viable;
+        if (g->mc <= MC_1_15)
+            goto L_not_viable;
+        goto L_viable;
+
+    case Geode:
+        if (g->mc <= MC_1_16)
+            goto L_not_viable;
+        goto L_viable;
 
     case Ancient_City:
-        if (g->mc < MC_1_19)
+        if (g->mc <= MC_1_18)
             goto L_not_viable;
         {
             StructureVariant sv;
             getVariant(&sv, Ancient_City, g->mc, g->seed, x, z, -1);
-            sampleX = ((chunkX << 5) + 2*sv.x + sv.sx) / 2 >> 2;
-            sampleZ = ((chunkZ << 5) + 2*sv.z + sv.sz) / 2 >> 2;
+            sampleX = (chunkX*32 + 2*sv.x + sv.sx) / 2 >> 2;
+            sampleZ = (chunkZ*32 + 2*sv.z + sv.sz) / 2 >> 2;
             sampleY = -27 >> 2;
             id = getBiomeAt(g, 4, sampleX, sampleY, sampleZ);
         }
@@ -1519,7 +1542,7 @@ L_not_viable:
 int isViableStructureTerrain(int structType, Generator *g, int x, int z)
 {
     int sx, sz;
-    if (g->mc < MC_1_18)
+    if (g->mc <= MC_1_17)
         return 1;
     if (structType == Desert_Pyramid || structType == Jungle_Temple)
     {
@@ -1536,8 +1559,8 @@ int isViableStructureTerrain(int structType, Generator *g, int x, int z)
         if (rot == 0) { sx = -5; }
         if (rot == 1) { sx = -5; sz = -5; }
         if (rot == 2) { sz = -5; }
-        x = (cx << 4) + 7;
-        z = (cz << 4) + 7;
+        x = cx * 16 + 7;
+        z = cz * 16 + 7;
     }
     else
     {
@@ -1556,7 +1579,7 @@ int isViableStructureTerrain(int structType, Generator *g, int x, int z)
     g->bn.nptype = NP_DEPTH;
     for (i = 0; i < 4; i++)
     {
-        double depth = sampleClimatePara(&g->bn, corners[i][0], corners[i][1]);
+        double depth = sampleClimatePara(&g->bn, 0, corners[i][0], corners[i][1]);
         if (depth < 0.48)
         {
             ret = 0;
@@ -1580,13 +1603,14 @@ int getSurfaceHeight(
 void sampleNoiseColumnEnd(double column[], const SurfaceNoise *sn,
         const EndNoise *en, int x, int z, int colymin, int colymax);
 
-int isViableEndCityTerrain(const EndNoise *en, const SurfaceNoise *sn,
+int isViableEndCityTerrain(const Generator *g, const SurfaceNoise *sn,
         int blockX, int blockZ)
 {
+    const EndNoise *en = &g->en;
     int chunkX = blockX >> 4;
     int chunkZ = blockZ >> 4;
-    blockX = (chunkX << 4) + 7;
-    blockZ = (chunkZ << 4) + 7;
+    blockX = chunkX * 16 + 7;
+    blockZ = chunkZ * 16 + 7;
     int cellx = (blockX >> 3);
     int cellz = (blockZ >> 3);
     // TODO: make sure upper bound is ok
@@ -1603,7 +1627,11 @@ int isViableEndCityTerrain(const EndNoise *en, const SurfaceNoise *sn,
             y0, y1, 4, (blockX & 7) / 8.0, (blockZ & 7) / 8.0);
 
     uint64_t cs;
-    setSeed(&cs, chunkX + chunkZ * 10387313ULL);
+    if (en->mc <= MC_1_18)
+        setSeed(&cs, chunkX + chunkZ * 10387313ULL);
+    else
+        cs = chunkGenerateRnd(g->seed, chunkX, chunkZ);
+
     switch (nextInt(&cs, 4))
     {
     case 0: // (++) 0
@@ -1697,6 +1725,7 @@ int getVariant(StructureVariant *r, int structType, int mc, uint64_t seed,
     memset(r, 0, sizeof(*r));
     r->start = -1;
     r->biome = -1;
+    r->y = 320;
 
     switch (structType)
     {
@@ -1774,11 +1803,17 @@ int getVariant(StructureVariant *r, int structType, int mc, uint64_t seed,
             sx = sy = sz = 0;
             return 0;
         }
-        break;
+        goto L_rotate_village_bastion;
 
     case Bastion:
         r->rotation = nextInt(&rng, 4);
         r->start = nextInt(&rng, 4);
+        if (mc == MC_1_16_1)
+        {   // swapped in 1.16.1 only
+            uint8_t tmp = r->start;
+            r->start = r->rotation;
+            r->rotation = tmp;
+        }
         switch (r->start)
         {
         case 0: sx = 46; sy = 24; sz = 46; break; // units/air_base
@@ -1786,13 +1821,34 @@ int getVariant(StructureVariant *r, int structType, int mc, uint64_t seed,
         case 2: sx = 38; sy = 48; sz = 38; break; // treasure/big_air_full
         case 3: sx = 16; sy = 32; sz = 32; break; // bridge/starting_pieces/entrance_base
         }
-        break;
+    L_rotate_village_bastion:
+        r->sy = sy;
+        if (mc >= MC_1_18)
+        {
+            switch (r->rotation)
+            { // 0:0, 1:cw90, 2:cw180, 3:cw270=ccw90
+            case 0: r->x = 0;    r->z = 0;    r->sx = sx; r->sz = sz; break;
+            case 1: r->x = 1-sz; r->z = 0;    r->sx = sz; r->sz = sx; break;
+            case 2: r->x = 1-sx; r->z = 1-sz; r->sx = sx; r->sz = sz; break;
+            case 3: r->x = 0;    r->z = 1-sx; r->sx = sz; r->sz = sx; break;
+            }
+        }
+        else
+        {
+            switch (r->rotation)
+            { // 0:0, 1:cw90, 2:cw180, 3:cw270=ccw90
+            case 0: r->x = 0;        r->z = 0;        r->sx = sx; r->sz = sz; break;
+            case 1: r->x = (x<0)-sz; r->z = 0;        r->sx = sz; r->sz = sx; break;
+            case 2: r->x = (x<0)-sx; r->z = (z<0)-sz; r->sx = sx; r->sz = sz; break;
+            case 3: r->x = 0;        r->z = (z<0)-sx; r->sx = sz; r->sz = sx; break;
+            }
+        }
+        return 1;
 
     case Ancient_City:
         r->rotation = nextInt(&rng, 4);
         r->start = 1 + nextInt(&rng, 3); // city_center_1..3
         sx = 18; sy = 31; sz = 41;
-        r->sy = sy;
         switch (r->rotation)
         { // 0:0, 1:cw90, 2:cw180, 3:cw270=ccw90
         case 0: x = -(x>0);    z = -(z>0);    r->sx = sx; r->sz = sz; break;
@@ -1809,6 +1865,7 @@ int getVariant(StructureVariant *r, int structType, int mc, uint64_t seed,
         case 2: r->x = x+sx; r->z = z+sz; break; // 2:cw180
         case 3: r->x = x-sz; r->z = z+sx; break; // 3:cw270=ccw90
         }
+        r->sy = sy;
         return 1;
 
     case Ruined_Portal:
@@ -1899,42 +1956,93 @@ int getVariant(StructureVariant *r, int structType, int mc, uint64_t seed,
         r->x = r->z = -29;
         r->sx = r->sz = 58;
         return 1;
+
+    case Igloo:
+        if (mc <= MC_1_12)
+        {
+            setSeed(&rng, getPopulationSeed(mc, seed, (x>>4) - 1, (z>>4) - 1));
+        }
+        r->rotation = nextInt(&rng, 4);
+        r->basement = nextDouble(&rng) < 0.5;
+        r->size = nextInt(&rng, 8) + 4;
+        sx = 7; sy = 5; sz = 8;
+        r->sy = sy;
+        switch (r->rotation)
+        { // orientation: 0:north, 1:east, 2:south, 3:west
+        case 0: r->rotation = 0; r->mirror = 0; r->sx = sx; r->sz = sz; break;
+        case 1: r->rotation = 1; r->mirror = 0; r->sx = sz; r->sz = sx; break;
+        case 2: r->rotation = 0; r->mirror = 1; r->sx = sx; r->sz = sz; break;
+        case 3: r->rotation = 1; r->mirror = 1; r->sx = sz; r->sz = sx; break;
+        }
+        return 1;
+
     case Desert_Pyramid:
-        r->sx = 21; r->sz = 21;
-        return 1;
+        sx = 21; sy = 15; sz = 21;
+        goto L_rotate_temple;
     case Jungle_Temple:
-        r->sx = 12; r->sz = 15;
-        return 1;
+        sx = 12; sy = 10; sz = 15;
+        goto L_rotate_temple;
     case Swamp_Hut:
-        r->sx = 7; r->sz = 9;
+        sx = 7; sy = 7; sz = 9;
+    L_rotate_temple:
+        r->sy = sy;
+        if (mc <= MC_1_19)
+        {
+            r->sx = sx; r->sz = sz;
+            return 1;
+        }
+        switch (nextInt(&rng, 4))
+        { // orientation: 0:north, 1:east, 2:south, 3:west
+        case 0: r->rotation = 0; r->mirror = 0; r->sx = sx; r->sz = sz; break;
+        case 1: r->rotation = 1; r->mirror = 0; r->sx = sz; r->sz = sx; break;
+        case 2: r->rotation = 0; r->mirror = 1; r->sx = sx; r->sz = sz; break;
+        case 3: r->rotation = 1; r->mirror = 1; r->sx = sz; r->sz = sx; break;
+        }
+        return 1;
+
+    case Geode:
+        if (mc >= MC_1_18)
+        {
+            StructureConfig sc;
+            getStructureConfig(Geode, mc, &sc);
+            Xoroshiro xr;
+            xSetSeed(&xr, getPopulationSeed(mc, seed, x&~15, z&~15) + sc.salt);
+            if (xNextFloat(&xr) >= sc.rarity) // rarity chance
+                return 0;
+            r->x = xNextIntJ(&xr, 16); // chunk offset X
+            r->z = xNextIntJ(&xr, 16); // chunk offset Z
+            r->x -= x & 15; // make offset relative to x and z
+            r->z -= z & 15;
+            r->y = xNextIntJ(&xr, 1+30+58) - 58; // Y-level
+            r->size = xNextIntJ(&xr, 2) + 3; // distribution points
+            xSkipN(&xr, 2);
+            r->cracked = xNextFloat(&xr) < 0.95;
+            // geodes generate somewhat sperical around a set of points with
+            // offset 4-6 on each coordinate
+            r->x += 5; r->y += 5; r->z += 5;
+        }
+        else
+        {
+            StructureConfig sc;
+            getStructureConfig(Geode, mc, &sc);
+            setSeed(&rng, getPopulationSeed(mc, seed, x&~15, z&~15) + sc.salt);
+            if (nextFloat(&rng) >= sc.rarity) // rarity chance
+                return 0;
+            r->x = nextInt(&rng, 16); // chunk offset X
+            r->z = nextInt(&rng, 16); // chunk offset Z
+            r->x -= x & 15;
+            r->z -= z & 15;
+            r->y = nextInt(&rng, 1+46-6) + 6; // Y-level
+            r->size = nextInt(&rng, 2) + 3;
+            skipNextN(&rng, 2);
+            r->cracked = nextFloat(&rng) < 0.95;
+            r->x += 5; r->y += 5; r->z += 5;
+        }
         return 1;
 
     default:
         return 0;
     }
-    r->y = 0;
-    r->sy = sy;
-    if (mc >= MC_1_18)
-    {
-        switch (r->rotation)
-        { // 0:0, 1:cw90, 2:cw180, 3:cw270=ccw90
-        case 0: r->x = 0;    r->z = 0;    r->sx = sx; r->sz = sz; break;
-        case 1: r->x = 1-sz; r->z = 0;    r->sx = sz; r->sz = sx; break;
-        case 2: r->x = 1-sx; r->z = 1-sz; r->sx = sx; r->sz = sz; break;
-        case 3: r->x = 0;    r->z = 1-sx; r->sx = sz; r->sz = sx; break;
-        }
-    }
-    else
-    {
-        switch (r->rotation)
-        { // 0:0, 1:cw90, 2:cw180, 3:cw270=ccw90
-        case 0: r->x = 0;        r->z = 0;        r->sx = sx; r->sz = sz; break;
-        case 1: r->x = (x<0)-sz; r->z = 0;        r->sx = sz; r->sz = sx; break;
-        case 2: r->x = (x<0)-sx; r->z = (z<0)-sz; r->sx = sx; r->sz = sz; break;
-        case 3: r->x = 0;        r->z = (z<0)-sx; r->sx = sz; r->sz = sx; break;
-        }
-    }
-    return 1;
 }
 
 static
@@ -2190,7 +2298,7 @@ int getEndCityPieces(Piece *list, uint64_t seed, int chunkX, int chunkZ)
     env.rng = &rng;
     env.ship = &ship;
     Piece *base = NULL;
-    int x = (chunkX << 4) + 8, z = (chunkZ << 4) + 8;
+    int x = chunkX * 16 + 8, z = chunkZ * 16 + 8;
     base = addEndCityPiece(&env, base, rot, x, 0, z, BASE_FLOOR);
     base = addEndCityPiece(&env, base, rot, -1, 0, -1, SECOND_FLOOR_1);
     base = addEndCityPiece(&env, base, rot, -1, 4, -1, THIRD_FLOOR_1);
@@ -2227,7 +2335,6 @@ fortress_info[] = {
 static
 Piece *addFortressPiece(PieceEnv *env, int typ, int x, int y, int z, int depth, int facing, int pending)
 {
-
     Pos3 pos = {x, y, z};
     Pos3 b0 = pos, b1 = pos;
     Pos3 d0 = fortress_info[typ].offset, d1 = fortress_info[typ].size;
@@ -2275,22 +2382,25 @@ Piece *addFortressPiece(PieceEnv *env, int typ, int x, int y, int z, int depth, 
     }
     // accept the piece and append it to the processing front
     skipNextN(env->rng, fortress_info[typ].skip);
-    (*env->n)++;
-    env->ntyp[typ]++;
-    if (typ != FORTRESS_END)
-        env->typlast = typ;
+    //int queue = 0;
     if (pending)
     {
+        (*env->n)++;
+        env->ntyp[typ]++;
+        if (typ != FORTRESS_END)
+            env->typlast = typ;
         Piece *q = env->list;
-        while (q->next)
-            q = q->next;
+        while (q->next) {
+            q = q->next; //queue++;
+        }
         q->next = p;
     }
-    //printf("[%d] typ=%d @(%d %d %d) f=%d    rng:%ld\n",
-    //    (*env->n-1), typ, b0.x, b0.y, b0.z, facing, *env->rng);
+    //printf("[%3d] typ=%2d @(%4d %4d %4d) f=%d p=%d queue=%2d   rng:%ld\n",
+    //    (*env->n-1), typ, b0.x, b0.y, b0.z, facing, pending, queue, *env->rng);
     //fflush(stdout);
     return p;
 }
+
 
 static
 void extendFortress(PieceEnv *env, Piece *p, int offh, int offv, int turn, int corridor)
@@ -2401,17 +2511,18 @@ void extendFortressPiece(PieceEnv *env, Piece *p)
 int getFortressPieces(Piece *list, int n, int mc, uint64_t seed, int chunkX, int chunkZ)
 {
     uint64_t rng = seed;
-    if (mc >= MC_1_16)
-    {
-        rng = chunkGenerateRnd(seed, chunkX, chunkZ);
-    }
-    else
+    if (mc <= MC_1_15)
     {
         setAttemptSeed(&rng, chunkX, chunkZ);
         nextInt(&rng, 3);
         nextInt(&rng, 8);
         nextInt(&rng, 8);
     }
+    else
+    {
+        rng = chunkGenerateRnd(seed, chunkX, chunkZ);
+    }
+
     int count = 1;
     PieceEnv env;
     memset(&env, 0, sizeof(env));
@@ -2422,7 +2533,7 @@ int getFortressPieces(Piece *list, int n, int mc, uint64_t seed, int chunkX, int
     env.typlast = 0;
     env.nmax = n;
     Piece *p = list;
-    Pos3 pos = {(chunkX << 4) + 2, 64, (chunkZ << 4) + 2};
+    Pos3 pos = {chunkX * 16 + 2, 64, chunkZ * 16 + 2};
     p->name = fortress_info[0].name;
     p->bb0 = p->bb1 = p->pos = pos;
     p->bb1.x += fortress_info[0].size.x;
@@ -2497,6 +2608,148 @@ void getFixedEndGateways(Pos pos[20][2], uint64_t seed)
 //==============================================================================
 // Seed Filters
 //==============================================================================
+
+
+double inverf(double x)
+{   // compute the inverse error function via newton's method
+    double t = x, dt = 1;
+    while (fabs(dt) > FLT_EPSILON)
+    {
+        dt = 0.5 * sqrt(PI) * (erf(t) - x) / exp(-t*t);
+        t -= dt;
+    }
+    return t;
+}
+
+void wilson(double n, double p, double z, double *lo, double *hi)
+{   // compute the wilson score interval
+    double s = z * z / n;
+    double t = 1 / (1 + s);
+    double w = t * (p + 0.5 * s);
+    double d = t * z * sqrt( (p*(1-p) + 0.25*s) / n ) + FLT_EPSILON;
+    *lo = w - d;
+    *hi = w + d;
+}
+
+int monteCarloBiomes(
+        Generator         * g,
+        Range               r,
+        uint64_t          * rng,
+        double              coverage,
+        double              confidence,
+        int (*eval)(Generator *g, int scale, int x, int y, int z, void*),
+        void              * data
+        )
+{
+    if (r.sy == 0)
+        r.sy = 1;
+
+    struct touple { int x, y, z; } *buf = 0;
+    size_t n = (size_t)r.sx*r.sy*r.sz;
+
+    // z-score (i.e. probit, or standard deviations) for the confidence
+    double zscore = sqrt(2.0) * inverf(confidence);
+
+    // One standard deviation is approximately given by sqrt(n) elements,
+    // hence we will take zscore * sqrt(n) as the maximum number of samples
+    // to reach the desired confidence. This gives us a wilson score interval
+    // for the upper and lower bound of successes we aim for.
+    double wn = zscore * sqrt(n);
+    double wlo, whi;
+    wilson(wn, coverage, zscore, &wlo, &whi);
+
+    // When the number of samples approaches the total number elements,
+    // we can avoid repeated samples by shuffling a buffer.
+    // (TODO: adjust for hypergeometric distribution?)
+    if (n < 4 * wn && n < INT_MAX)
+        buf = (struct touple*) malloc(n * sizeof(*buf));
+
+    if (buf)
+    {
+        size_t idx = 0;
+        int i, k, j;
+        for (k = 0; k < r.sy; k++)
+        {
+            for (j = 0; j < r.sz; j++)
+            {
+                for (i = 0; i < r.sx; i++)
+                {
+                    buf[idx].x = i;
+                    buf[idx].y = k;
+                    buf[idx].z = j;
+                    idx++;
+                }
+            }
+        }
+    }
+
+    size_t i = 0;
+    double m = 0; // number of samples
+    double x = 0; // number of successes
+    int ret = 1;
+
+    // iterate over the area in a random order
+    for (i = 0; i < n; i++)
+    {
+        struct touple t;
+        if (buf)
+        {
+            int j = n - i;
+            int k = nextInt(rng, j);
+            t = buf[k];
+            if (k != j-1)
+            {
+                buf[k] = buf[j-1];
+                buf[j-1] = t;
+            }
+        }
+        else
+        {
+            t.x = nextInt(rng, r.sx);
+            t.y = nextInt(rng, r.sy);
+            t.z = nextInt(rng, r.sz);
+        }
+
+        int status = eval(g, r.scale, r.x+t.x, r.y+t.y, r.z+t.z, data);
+        if (status == -1)
+            continue;
+        else if (status == 0)
+            ;
+        else if (status == 1)
+            x += 1.0;
+        else
+        {
+            ret = 0;
+            break;
+        }
+        m += 1.0;
+
+        // check if we can abort early with the current confidence interval
+        double per_m = 1.0 / m;
+        double lo, hi;
+        wilson(m, x * per_m, zscore, &lo, &hi);
+
+        if (lo - per_m > coverage)
+        {
+            ret = 1;
+            break;
+        }
+        if (hi + per_m < coverage)
+        {
+            ret = 0;
+            break;
+        }
+
+        if (hi - lo < whi - wlo)
+        {   // should occur around i ~ wn
+            ret = x * per_m > coverage;
+            break;
+        }
+    }
+    if (buf)
+        free(buf);
+    return ret;
+}
 
 
 void setupBiomeFilter(
@@ -2959,6 +3212,33 @@ int checkForBiomes(
     if (r.sy == 0)
         r.sy = 1;
 
+    if (g->mc <= MC_B1_7)
+    {   // TODO: optimize
+        int *ids;
+        if (cache)
+            ids = cache;
+        else
+            ids = allocCache(g, r);
+
+        if (g->dim != dim || g->seed != seed)
+            applySeed(g, dim, seed);
+
+        genBiomes(g, ids, r);
+        uint64_t b = 0;
+        for (i = 0; i < r.sx*r.sz; i++)
+            b |= (1ULL << ids[i]);
+
+        if (ids != cache)
+            free(ids);
+
+        int match_exc = (filter->biomeToExcl) == 0;
+        int match_any = (filter->biomeToPick) == 0;
+        int match_req = (filter->biomeToFind) == 0;
+        match_exc |= (b & filter->biomeToExcl) == 0;
+        match_any |= (b & filter->biomeToPick) != 0;
+        match_req |= (b & filter->biomeToFind) == filter->biomeToFind;
+        return match_exc && match_any && match_req;
+    }
     if (g->mc <= MC_1_17 && dim == DIM_OVERWORLD)
     {
         Layer *entry = (Layer*) getLayerForScale(g, r.scale);
@@ -3692,6 +3972,211 @@ int checkForTemps(LayerStack *g, uint64_t seed, int x, int z, int w, int h, cons
 }
 
 
+struct locate_info_t
+{
+    Generator *g;
+    int *ids;
+    Range r;
+    int match, tol;
+    volatile char *stop;
+};
+
+static
+int floodFillGen(struct locate_info_t *info, int i, int j, Pos *p)
+{
+    typedef struct { int i, j, d; } entry_t;
+    entry_t *queue = (entry_t*) malloc(info->r.sx*info->r.sz * sizeof(*queue));
+    int qn = 1;
+    queue->i = i;
+    queue->j = j;
+    queue->d = 0;
+    int64_t sumx = 0;
+    int64_t sumz = 0;
+    int n = 0;
+    while (--qn >= 0)
+    {
+        if (info->stop && *info->stop)
+            return 0;
+        int d = queue[qn].d;
+        i = queue[qn].i;
+        j = queue[qn].j;
+        int k = j * info->r.sx + i;
+        int x = info->r.x + i;
+        int z = info->r.z + j;
+        int id = info->ids[k];
+        info->ids[k] = INT_MAX;
+        if (info->g->mc >= MC_1_18)
+            id = getBiomeAt(info->g, info->r.scale, x, info->r.y, z);
+        if (id == info->match)
+        {
+            sumx += x;
+            sumz += z;
+            n++;
+            d = 0;
+        }
+        else
+        {
+            if (++d >= info->tol)
+                continue;
+        }
+        entry_t next[] = { {i,j-1,d}, {i,j+1,d}, {i-1,j,d}, {i+1,j,d} };
+        for (k = 0; k < 4; k++)
+        {
+            i = next[k].i; j = next[k].j;
+            if (i < 0 || i >= info->r.sx || j < 0 || j >= info->r.sz)
+                continue;
+            if (info->ids[j * info->r.sx + i] == INT_MAX)
+                continue;
+            queue[qn++] = next[k];
+        }
+    }
+    free(queue);
+    if (n)
+    {
+        p->x = (int) round((sumx / (double)n + 0.5) * info->r.scale);
+        p->z = (int) round((sumz / (double)n + 0.5) * info->r.scale);
+    }
+    return n;
+}
+
+
+int getBiomeCenters(Pos *pos, int *siz, int nmax, Generator *g, Range r,
+    int match, int minsiz, int tol, volatile char *stop)
+{
+    if (minsiz <= 0)
+        minsiz = 1;
+    int i, j, k, n = 0;
+    int *ids = (int*) malloc(r.sx*r.sz * sizeof(int));
+    memset(ids, -1, r.sx*r.sz * sizeof(int));
+    if (tol <= 0)
+        tol = 1;
+    int step = tol;
+    struct locate_info_t info;
+    info.g = g;
+    info.ids = ids;
+    info.r = r;
+    info.stop = stop;
+    info.match = match;
+    info.tol = tol;
+
+    if (g->mc >= MC_1_18)
+    {
+        const int *lim = getBiomeParaLimits(g->mc, match);
+
+        int para[] = {
+            NP_TEMPERATURE,
+            NP_HUMIDITY,
+            NP_EROSION,
+            NP_CONTINENTALNESS,
+            NP_WEIRDNESS,
+        };
+        int npara = sizeof(para) / sizeof(para[0]);
+        if (tol == 1)
+            step = 1 + floor(sqrt(minsiz) * 0.5);
+
+        for (j = 0; j < r.sz; j += step)
+        {
+            for (i = 0; i < r.sx; i += step)
+            {
+                if (stop && *stop)
+                    break;
+                for (k = 0; k < npara; k++)
+                {
+                    const int *plim = lim + 2*para[k];
+                    if (plim[0] == INT_MIN && plim[1] == INT_MAX)
+                        continue;
+                    DoublePerlinNoise *dpn = &g->bn.climate[para[k]];
+                    double px = (r.x+i) * r.scale / 4.0;
+                    double pz = (r.z+j) * r.scale / 4.0;
+                    int p = 10000 * sampleDoublePerlin(dpn, px, 0, pz);
+                    if (p < plim[0] || p > plim[1])
+                    {
+                        ids[j*r.sx + i] = -2;
+                        break;
+                    }
+                }
+            }
+        }
+        match = -1; // id entries that are still -1 are our candidates
+    }
+    else // 1.17-
+    {
+        int ts = 32 / r.scale;
+        if (r.sx + r.sz < 32)
+            ts = 8;
+
+        int tx = (int) floor(r.x / (double)ts);
+        int tz = (int) floor(r.z / (double)ts);
+        int tw = (int) ceil((r.x+r.sx) / (double)ts) - tx;
+        int th = (int) ceil((r.z+r.sz) / (double)ts) - tz;
+        int ti, tj;
+
+        BiomeFilter bf;
+        setupBiomeFilter(&bf, g->mc, 0, &match, 1, 0, 0, 0, 0);
+        //applySeed(g, 0, g->seed);
+
+        Range tr = { r.scale, 0, 0, ts, ts, 0, 1 };
+        int *cache = allocCache(g, r);
+
+        for (tj = 0; tj < th; tj++)
+        {
+            for (ti = 0; ti < tw; ti++)
+            {
+                if (stop && *stop)
+                    break;
+                tr.x = (tx+ti) * ts;
+                tr.z = (tz+tj) * ts;
+                if (checkForBiomes(g, cache, tr, DIM_OVERWORLD, g->seed,
+                    &bf, stop) != 1)
+                {
+                    continue;
+                }
+                for (j = 0; j < ts; j++)
+                {
+                    int jj = tr.z + j - r.z;
+                    if (jj < 0 || jj >= r.sz)
+                        continue;
+                    for (i = 0; i < ts; i++)
+                    {
+                        int ii = tr.x + i - r.x;
+                        if (ii < 0 || ii >= r.sx)
+                            continue;
+                        ids[jj*r.sx + ii] = cache[j*tr.sx + i];
+                    }
+                }
+            }
+        }
+        free(cache);
+    }
+
+    applySeed(g, DIM_OVERWORLD, g->seed);
+    for (j = 0; j < r.sz; j += step)
+    {
+        for (i = 0; i < r.sx; i += step)
+        {
+            if (stop && *stop)
+                break;
+            if (ids[j*r.sx + i] != match)
+                continue;
+            Pos center;
+            int area = floodFillGen(&info, i, j, &center);
+            if (area >= minsiz)
+            {
+                pos[n] = center;
+                if (siz) siz[n] = area;
+                if (++n >= nmax)
+                    goto L_end;
+            }
+        }
+    }
+
+L_end:
+    free(ids);
+
+    return n;
+}
+
+
 int canBiomeGenerate(int layerId, int mc, uint32_t flags, int id)
 {
     int dofilter = 0;
@@ -3740,7 +4225,7 @@ int canBiomeGenerate(int layerId, int mc, uint32_t flags, int id)
             return 0;
         }
     }
-    if (dofilter || (layerId == L_ZOOM_64 && mc == MC_1_0))
+    if (dofilter || (layerId == L_ZOOM_64 && mc <= MC_1_0))
     {
         dofilter = 1;
         if (id == mushroom_field_shore)
@@ -3815,7 +4300,7 @@ void getAvailableBiomes(uint64_t *mL, uint64_t *mM, int layerId, int mc, uint32_
 {
     *mL = *mM = 0;
     int i;
-    if (mc >= MC_1_18)
+    if (mc <= MC_B1_7 || mc >= MC_1_18)
     {
         for (i = 0; i < 64; i++)
         {
@@ -3945,7 +4430,7 @@ static void _genPotential(struct _gp_args *a, int layer, int id)
     case L_BIOME_256: // biomes added in (L_BIOME_256, L_BIOME_EDGE_64]
     case L_BAMBOO_256:
     case L_ZOOM_64:
-        if (mc < MC_1_14 && layer == L_BAMBOO_256) goto L_bad_layer;
+        if (mc <= MC_1_13 && layer == L_BAMBOO_256) goto L_bad_layer;
         if (mc >= MC_1_7) {
             if (mc >= MC_1_14 && id == jungle)
                 _genPotential(a, L_BIOME_EDGE_64, bamboo_jungle);
@@ -4089,7 +4574,7 @@ static void _genPotential(struct _gp_args *a, int layer, int id)
             _genPotential(a, L_RIVER_MIX_4, frozen_river);
         else if (id == mushroom_fields || id == mushroom_field_shore)
             _genPotential(a, L_RIVER_MIX_4, mushroom_field_shore);
-        else if (id != ocean && (mc < MC_1_7 || !isOceanic(id)))
+        else if (id != ocean && (mc <= MC_1_6 || !isOceanic(id)))
             _genPotential(a, L_RIVER_MIX_4, river);
         _genPotential(a, L_RIVER_MIX_4, id);
         break;
@@ -4286,8 +4771,8 @@ int getParaRange(const DoublePerlinNoise *para, double *pmin, double *pmax,
     int maxrad, maxiter;
     int err = 1;
 
-    *pmin = DBL_MAX;
-    *pmax = -DBL_MAX;
+    if (pmin) *pmin = DBL_MAX;
+    if (pmax) *pmax = -DBL_MAX;
 
     lmin = DBL_MAX, lmax = 0;
     for (i = 0; i < para->octA.octcnt; i++)
@@ -4313,8 +4798,8 @@ int getParaRange(const DoublePerlinNoise *para, double *pmin, double *pmax,
                     if (err)
                         return err;
                 }
-                if (v < *pmin) *pmin = v;
-                if (v > *pmax) *pmax = v;
+                if (pmin && v < *pmin) *pmin = v;
+                if (pmax && v > *pmax) *pmax = v;
             }
         }
         return 0;
@@ -4328,20 +4813,24 @@ int getParaRange(const DoublePerlinNoise *para, double *pmin, double *pmax,
     {
         for (i = 0; i < w; i += step)
         {
-            v = getParaDescent(para, +factor, x, z, w, h, i, j,
-                step, step, dr, data, func);
-            if (v != v) goto L_end;
-            if (v < *pmin) *pmin = v;
-            v = -getParaDescent(para, -factor, x, z, w, h, i, j,
-                step, step, dr, data, func);
-            if (v != v) goto L_end;
-            if (v > *pmax) *pmax = v;
+            if (pmin)
+            {
+                v = getParaDescent(para, +factor, x, z, w, h, i, j,
+                    step, step, dr, data, func);
+                if (v != v) goto L_end;
+                if (v < *pmin) *pmin = v;
+            }
+            if (pmax)
+            {
+                v = -getParaDescent(para, -factor, x, z, w, h, i, j,
+                    step, step, dr, data, func);
+                if (v != v) goto L_end;
+                if (v > *pmax) *pmax = v;
+            }
         }
     }
 
     //(*(double*)data) = -1e9+1; // testing
-    if (lmin == lmax)
-        return 0;
 
     step = (int) (1.0 / (perlin_grad * lmax + FLT_EPSILON)) + 1;
 
@@ -4375,93 +4864,97 @@ int getParaRange(const DoublePerlinNoise *para, double *pmin, double *pmax,
     skipsiz = (ww+1) * (hh+1) * sizeof(*skip);
     skip = (char*) malloc(skipsiz);
 
-    // look for minima
-    memset(skip, 0, skipsiz);
+    if (pmin)
+    {   // look for minima
+        memset(skip, 0, skipsiz);
 
-    for (jj = 0; jj <= hh; jj++)
-    {
-        j = jj * step; if (j >= h) j = h-1;
-        for (ii = 0; ii <= ww; ii++)
+        for (jj = 0; jj <= hh; jj++)
         {
-            i = ii * step; if (i >= w) i = w-1;
-            if (skip[jj*ww+ii]) continue;
-
-            v = factor * sampleDoublePerlin(para, x+i, 0, z+j);
-            if (func)
+            j = jj * step; if (j >= h) j = h-1;
+            for (ii = 0; ii <= ww; ii++)
             {
-                int e = func(data, x+i, z+j, v);
-                if (e)
-                {
-                    err = e;
-                    goto L_end;
-                }
-            }
-            // not looking for maxima yet, but we'll update the bounds anyway
-            if (v > *pmax) *pmax = v;
+                i = ii * step; if (i >= w) i = w-1;
+                if (skip[jj*ww+ii]) continue;
 
-            dr = beta * (v - *pmin) / vdif;
-            if (dr > 1.0)
-            {   // difference is too large -> mark visinity to be skipped
-                int a, b, r = (int) dr;
-                for (b = 0; b < r; b++)
+                v = factor * sampleDoublePerlin(para, x+i, 0, z+j);
+                if (func)
                 {
-                    if (b+jj < 0 || b+jj >= hh) continue;
-                    for (a = -r+1; a < r; a++)
+                    int e = func(data, x+i, z+j, v);
+                    if (e)
                     {
-                        if (a+ii < 0 || a+ii >= ww) continue;
-                        skip[(b+jj)*ww + (a+ii)] = 1;
+                        err = e;
+                        goto L_end;
                     }
                 }
-                continue;
+                // not looking for maxima yet, but update the bounds anyway
+                if (pmax && v > *pmax) *pmax = v;
+
+                dr = beta * (v - *pmin) / vdif;
+                if (dr > 1.0)
+                {   // difference is too large -> mark visinity to be skipped
+                    int a, b, r = (int) dr;
+                    for (b = 0; b < r; b++)
+                    {
+                        if (b+jj < 0 || b+jj >= hh) continue;
+                        for (a = -r+1; a < r; a++)
+                        {
+                            if (a+ii < 0 || a+ii >= ww) continue;
+                            skip[(b+jj)*ww + (a+ii)] = 1;
+                        }
+                    }
+                    continue;
+                }
+                v = getParaDescent(para, +factor, x, z, w, h, i, j,
+                    maxrad, maxiter, dr, data, func);
+                if (v != v) goto L_end;
+                if (v < *pmin) *pmin = v;
             }
-            v = getParaDescent(para, +factor, x, z, w, h, i, j,
-                maxrad, maxiter, dr, data, func);
-            if (v != v) goto L_end;
-            if (v < *pmin) *pmin = v;
         }
     }
 
-    // look for maxima
-    memset(skip, 0, skipsiz);
+    if (pmax)
+    {   // look for maxima
+        memset(skip, 0, skipsiz);
 
-    for (jj = 0; jj <= hh; jj++)
-    {
-        j = jj * step; if (j >= h) j = h-1;
-        for (ii = 0; ii <= ww; ii++)
+        for (jj = 0; jj <= hh; jj++)
         {
-            i = ii * step; if (i >= w) i = w-1;
-            if (skip[jj*ww+ii]) continue;
-
-            v = -factor * sampleDoublePerlin(para, x+i, 0, z+j);
-            if (func)
+            j = jj * step; if (j >= h) j = h-1;
+            for (ii = 0; ii <= ww; ii++)
             {
-                int e = func(data, x+i, z+j, -v);
-                if (e)
-                {
-                    err = e;
-                    goto L_end;
-                }
-            }
+                i = ii * step; if (i >= w) i = w-1;
+                if (skip[jj*ww+ii]) continue;
 
-            dr = beta * (v + *pmax) / vdif;
-            if (dr > 1.0)
-            {   // difference too large -> mark visinity to be skipped
-                int a, b, r = (int) dr;
-                for (b = 0; b < r; b++)
+                v = -factor * sampleDoublePerlin(para, x+i, 0, z+j);
+                if (func)
                 {
-                    if (b+jj < 0 || b+jj >= hh) continue;
-                    for (a = -r+1; a < r; a++)
+                    int e = func(data, x+i, z+j, -v);
+                    if (e)
                     {
-                        if (a+ii < 0 || a+ii >= ww) continue;
-                        skip[(b+jj)*ww + (a+ii)] = 1;
+                        err = e;
+                        goto L_end;
                     }
                 }
-                continue;
+
+                dr = beta * (v + *pmax) / vdif;
+                if (dr > 1.0)
+                {   // difference too large -> mark visinity to be skipped
+                    int a, b, r = (int) dr;
+                    for (b = 0; b < r; b++)
+                    {
+                        if (b+jj < 0 || b+jj >= hh) continue;
+                        for (a = -r+1; a < r; a++)
+                        {
+                            if (a+ii < 0 || a+ii >= ww) continue;
+                            skip[(b+jj)*ww + (a+ii)] = 1;
+                        }
+                    }
+                    continue;
+                }
+                v = -getParaDescent(para, -factor, x, z, w, h, i, j,
+                    maxrad, maxiter, dr, data, func);
+                if (v != v) goto L_end;
+                if (v > *pmax) *pmax = v;
             }
-            v = -getParaDescent(para, -factor, x, z, w, h, i, j,
-                maxrad, maxiter, dr, data, func);
-            if (v != v) goto L_end;
-            if (v > *pmax) *pmax = v;
         }
     }
 
@@ -4537,13 +5030,32 @@ static const int g_biome_para_range_19_diff[][13] = {
 {mangrove_swamp          ,  2000, IMAX,  IMIN, IMAX, -1100, IMAX,  5500, IMAX,  IMIN, IMAX,  IMIN, IMAX},
 };
 
+static const int g_biome_para_range_20_diff[][13] = {
+{swamp                   , -4500, 2000,  IMIN, IMAX, -1100, IMAX,  5500, IMAX,  IMIN, IMAX,  IMIN, IMAX},
+{grove                   ,  IMIN, 2000, -1000, IMAX, -1899, IMAX,  IMIN,-3750,  IMIN,10500,  IMIN, IMAX},
+{snowy_slopes            ,  IMIN, 2000,  IMIN,-1000, -1899, IMAX,  IMIN,-3750,  IMIN,10500,  IMIN, IMAX},
+{jagged_peaks            ,  IMIN, 2000,  IMIN, IMAX, -1899, IMAX,  IMIN,-3750,  IMIN,10500, -9333,-4000},
+{frozen_peaks            ,  IMIN, 2000,  IMIN, IMAX, -1899, IMAX,  IMIN,-3750,  IMIN,10500,  4000, 9333},
+{stony_peaks             ,  2000, 5500,  IMIN, IMAX, -1899, IMAX,  IMIN,-3750,  IMIN,10500, -9333, 9333},
+{cherry_grove            , -4500, 2000,  IMIN,-1000,   300, IMAX, -7799,  500,  IMIN, IMAX,  2666, IMAX},
+};
+
 
 /**
  * Gets the min/max parameter values within which a biome change can occur.
  */
 const int *getBiomeParaExtremes(int mc)
 {
-    if (mc < MC_1_18)
+    if (mc <= MC_B1_7)
+    {
+        static const int extremes_beta[] = {
+            0, 10000,
+            0, 10000,
+            0,0, 0,0, 0,0, 0,0,
+        };
+        return extremes_beta;
+    }
+    if (mc <= MC_1_17)
         return NULL;
     static const int extremes[] = {
         -4501, 5500,
@@ -4563,10 +5075,19 @@ const int *getBiomeParaExtremes(int mc)
  */
 const int *getBiomeParaLimits(int mc, int id)
 {
-    if (mc < MC_1_18)
+    if (mc <= MC_1_17)
         return NULL;
     int i, n;
-    if (mc >= MC_1_19)
+    if (mc > MC_1_19)
+    {
+        n = sizeof(g_biome_para_range_20_diff) / sizeof(g_biome_para_range_20_diff[0]);
+        for (i = 0; i < n; i++)
+        {
+            if (g_biome_para_range_20_diff[i][0] == id)
+                return &g_biome_para_range_20_diff[i][1];
+        }
+    }
+    if (mc > MC_1_18)
     {
         n = sizeof(g_biome_para_range_19_diff) / sizeof(g_biome_para_range_19_diff[0]);
         for (i = 0; i < n; i++)
@@ -4575,7 +5096,6 @@ const int *getBiomeParaLimits(int mc, int id)
                 return &g_biome_para_range_19_diff[i][1];
         }
     }
-
     n = sizeof(g_biome_para_range_18) / sizeof(g_biome_para_range_18[0]);
     for (i = 0; i < n; i++)
     {

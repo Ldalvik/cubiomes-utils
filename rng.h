@@ -4,7 +4,7 @@
 #define __STDC_FORMAT_MACROS 1
 
 #include <stdlib.h>
-#include <stdint.h>
+#include <stddef.h>
 #include <inttypes.h>
 
 
@@ -12,9 +12,17 @@
 ///                      Compiler and Platform Features
 ///=============================================================================
 
-#ifndef NULL
-#define NULL ((void*)0)
-#endif
+typedef int8_t      i8;
+typedef uint8_t     u8;
+typedef int16_t     i16;
+typedef uint16_t    u16;
+typedef int32_t     i32;
+typedef uint32_t    u32;
+typedef int64_t     i64;
+typedef uint64_t    u64;
+typedef float       f32;
+typedef double      f64;
+
 
 #define STRUCT(S) typedef struct S S; struct S
 
@@ -62,6 +70,14 @@ uint32_t rotr32(uint32_t a, uint8_t b)
     return (a >> b) | (a << (32-b));
 }
 
+/// integer floor divide
+static inline ATTR(const, always_inline)
+int32_t floordiv(int32_t a, int32_t b)
+{
+    int32_t q = a / b;
+    int32_t r = a % b;
+    return q - ((a ^ b) < 0 && !!r);
+}
 
 ///=============================================================================
 ///                    C implementation of Java Random

@@ -2,11 +2,13 @@
 #define GENERATOR_H_
 
 #include "layers.h"
+#include "biomenoise.h"
 
 // generator flags
 enum
 {
     LARGE_BIOMES            = 0x1,
+    NO_BETA_OCEAN           = 0x2,
     FORCE_OCEAN_VARIANTS    = 0x4,
 };
 
@@ -26,6 +28,10 @@ STRUCT(Generator)
         };
         struct { // MC 1.18
             BiomeNoise bn;
+        };
+        struct { // MC A1.2 - B1.7
+            BiomeNoiseBeta bnb;
+            //SurfaceNoiseBeta snb;
         };
     };
     NetherNoise nn; // MC 1.16
@@ -121,6 +127,13 @@ Layer *setupLayer(Layer *l, mapfunc_t *map, int mc,
  */
 int genArea(const Layer *layer, int *out, int areaX, int areaZ, int areaWidth, int areaHeight);
 
+/**
+ * Map an approximation of the Overworld surface height.
+ * The horizontal scaling is 1:4. If non-null, the ids are filled with the
+ * biomes of the area. The height (written to y) is in blocks.
+ */
+int mapApproxHeight(float *y, int *ids, const Generator *g,
+    const SurfaceNoise *sn, int x, int z, int w, int h);
 
 
 #ifdef __cplusplus

@@ -30,10 +30,13 @@ enum StructureType
     Ancient_City,
     Treasure,
     Mineshaft,
+    Desert_Well,
+    Geode,
     Fortress,
     Bastion,
     End_City,
     End_Gateway,
+    Trail_Ruin,
     FEATURE_NUM
 };
 
@@ -53,6 +56,7 @@ STRUCT(StructureConfig)
     int8_t  chunkRange;
     uint8_t structType;
     uint8_t properties;
+    float   rarity;
 };
 
 
@@ -81,7 +85,9 @@ STRUCT(StructureVariant)
     uint8_t giant       :1; // giant portal variant
     uint8_t underground :1; // underground portal
     uint8_t airpocket   :1; // portal with air pocket
-    //uint8_t ship        :1; // end city with ship
+    uint8_t basement    :1; // igloo with basement
+    uint8_t cracked     :1; // geode with crack
+    uint8_t size;           // geode size | igloo middel pieces
     uint8_t start;          // starting piece index
     short   biome;          // biome variant
     uint8_t rotation;       // 0:0, 1:cw90, 2:cw180, 3:cw270=ccw90
@@ -272,21 +278,25 @@ Pos initFirstStronghold(StrongholdIter *sh, int mc, uint64_t s48);
  * location, as well as the approximate location of the next stronghold.
  *
  * @sh      : stronghold iteration state, holding position info
- * @g       : generator, should be initialized for Overworld generation
+ * @g       : generator, should be initialized for Overworld generation,
+ *            for version 1.19.3+ the generator may be left NULL to iterate
+ *            over the approximate locations without biome check
  *
  * Returns the number of further strongholds after this one.
  */
 int nextStronghold(StrongholdIter *sh, const Generator *g);
+
+
+/* Finds the approximate spawn point in the world.
+ * The random state 'rng' output can be NULL to ignore.
+ */
+Pos estimateSpawn(const Generator *g, uint64_t *rng);
 
 /* Finds the spawn point in the world.
  * Warning: Slow, and may be inaccurate because the world spawn depends on
  * grass blocks!
  */
 Pos getSpawn(const Generator *g);
-
-/* Finds the approximate spawn point in the world.
- */
-Pos estimateSpawn(const Generator *g);
 
 
 /* Finds a suitable pseudo-random location in the specified area.
@@ -347,7 +357,7 @@ int isViableStructureTerrain(int structType, Generator *g, int blockX, int block
  * The world seed should be applied to the EndNoise and SurfaceNoise before
  * calling this function. (Use initSurfaceNoiseEnd() for initialization.)
  */
-int isViableEndCityTerrain(const EndNoise *en, const SurfaceNoise *sn,
+int isViableEndCityTerrain(const Generator *g, const SurfaceNoise *sn,
         int blockX, int blockZ);
 
 
@@ -458,6 +468,57 @@ enum
 uint64_t getHouseList(int *houses, uint64_t seed, int chunkX, int chunkZ);
 
 
+
+//==============================================================================
+// Seed Filters (generic)
+//==============================================================================
+
+
+/* Add the given biome 'id' to a biome set which is represented by the
+ * bitfields mL and mM for ids 0-63 and 128-191, respectively.
+ */
+static inline void idSetAdd(uint64_t *mL, uint64_t *mM, int id)
+{
+    switch (id & ~0x3f) {
+    case 0:     *mL |= 1ULL << id;       break; // [0, 64)
+    case 128:   *mM |= 1ULL << (id-128); break; // [128, 192)
+    }
+}
+
+static inline int idSetTest(uint64_t mL, uint64_t mM, int id)
+{
+    switch (id & ~0x3f) {
+    case 0:     return !!(mL & (1ULL << id));       // [0, 64)
+    case 128:   return !!(mM & (1ULL << (id-128))); // [128, 192)
+    }
+    return 0;
+}
+
+/* Samples biomes within the specified range and checks that at least a given
+ * proportion of the biomes in that area evaluate as successes.
+ *
+ * @g           : biome generator
+ * @r           : range to be checked
+ * @rng         : random number seed for the sampling positions
+ * @coverage    : minimum coverage of successful evaluations, [0,1]
+ * @confidence  : confidence level, (0,1), e.g. 0.95 for a 95% confidence
+ * @eval        : evaluation function - 0:fail, 1:success, -1:skip, else:abort
+ * @data        : data argument for eval()
+ *
+ * Returns non-zero if a sufficient proportion of the sampled positions
+ * evaluted as successes.
+ */
+int monteCarloBiomes(
+        Generator         * g,
+        Range               r,
+        uint64_t          * rng,
+        double              coverage,
+        double              confidence,
+        int (*eval)(Generator *g, int scale, int x, int y, int z, void *data),
+        void              * data
+        );
+
+
 //==============================================================================
 // Seed Filters (for versions up to 1.17)
 //==============================================================================
@@ -541,6 +602,30 @@ int checkForBiomesAtLayer(
  */
 int checkForTemps(LayerStack *g, uint64_t seed, int x, int z, int w, int h, const int tc[9]);
 
+/* Find the center positions for a given biome id.
+ * @pos     : output biome center positions
+ * @siz     : output size of biomes (nullable)
+ * @nmax    : maximum number of output entries
+ * @g       : generator, should be initialized for overworld generation
+ * @r       : area to examine, requires: scale = 4, sy = 1
+ * @match   : biome id to find
+ * @minsiz  : minimum size of output biomes
+ * @tol     : border tolerance
+ * @stop    : stopping flag (nullable)
+ * Returns the number of entries written to pos and siz.
+ */
+int getBiomeCenters(
+        Pos           * pos,
+        int           * siz,
+        int             nmax,
+        Generator     * g,
+        Range           r,
+        int             match,
+        int             minsiz,
+        int             tol,
+        volatile char * stop
+        );
+
 /* Checks if a biome may generate given a version and layer ID as entry point.
  * The supported layers are:
  * L_BIOME_256, L_BAMBOO_256, L_BIOME_EDGE_64, L_HILLS_64, L_SUNFLOWER_64,
@@ -599,7 +684,7 @@ double getParaDescent(const DoublePerlinNoise *para, double factor,
  * error is returned.
  *
  * The results are written to pmin and pmax (which would be cast to an integer
- * during boime mapping).
+ * during boime mapping). Nullable, to look for minima and maxima separately.
  */
 int getParaRange(const DoublePerlinNoise *para, double *pmin, double *pmax,
     int x, int z, int w, int h, void *data, int (*func)(void*,int,int,double));

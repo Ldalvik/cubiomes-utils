@@ -8,8 +8,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <limits.h>
 
-uint32_t hash32(uint32_t x)
+static uint32_t hash32(uint32_t x)
 {
     x ^= x >> 15;
     x *= 0xd168aaad;
@@ -19,7 +20,7 @@ uint32_t hash32(uint32_t x)
     return x;
 }
 
-double now()
+static double now()
 {
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC, &t);
@@ -72,7 +73,7 @@ benchmark(int64_t (*f)(int64_t n, void*), void *dat, double *tmin, double *tavg)
     return cnt;
 }
 
-uint32_t getRef(int mc, int dim, int bits, int spread, const char *path)
+uint32_t getRef(int mc, int dim, int bits, int scale, int spread, const char *path)
 {
     Generator g;
     setupGenerator(&g, mc, 0);
@@ -90,7 +91,7 @@ uint32_t getRef(int mc, int dim, int bits, int spread, const char *path)
             int64_t s = (int64_t)( (z << bits) ^ x );
             applySeed(&g, dim, s);
             int y = (int)((hash32((int)s) & 0x7fffffff) % 384 - 64) >> 2;
-            int id = getBiomeAt(&g, 4, x, y, z);
+            int id = getBiomeAt(&g, scale, x, y, z);
             h ^= hash32( (int) s ^ (id << 2*bits) );
             if (fp)
                 //fprintf(fp, "%5d%6d%4d\n", x*spread, z*spread, id);
@@ -110,12 +111,12 @@ int testBiomeGen1x1(const int *mc, const uint32_t *expect, int dim, int bits, in
 
     for (test = 0; test < cnt; test++)
     {
-        printf("  [%*d/%*d] MC 1.%-2d dim=%-2d: expecting %08x ... ",
-               1+(cnt>9), test+1, 1+(cnt>9), cnt, mc[test], dim, expect[test]);
+        printf("  [%*d/%*d] MC %-6s dim=%-2d: expecting %08x ... ",
+               1+(cnt>9), test+1, 1+(cnt>9), cnt, mc2str(mc[test]), dim, expect[test]);
         fflush(stdout);
 
         double t = -now();
-        h = getRef(mc[test], dim, bits, spread, NULL);
+        h = getRef(mc[test], dim, bits, 4, spread, NULL);
         t += now();
         printf("got %08x %s\e[0m (%ld msec)\n",
             h, h == expect[test] ? "\e[1;92mOK" : "\e[1;91mFAILED",
@@ -135,14 +136,14 @@ uint32_t testAreas(int mc, int dim, int scale)
     double t = -now();
     uint32_t hash = 0;
     uint64_t s;
-    for (s = 0; s < 100; s++)
+    for (s = 0; s < 1000; s++)
     {
         int d = 40000;
         int x = hash32(s << 5) % d - d/2;
         int y = ((int)(hash32(s << 7) % 384) - 64);
         int z = hash32(s << 9) % d - d/2;
-        int w = 1 + hash32(s << 11) % 128; w = 128;
-        int h = 1 + hash32(s << 13) % 128; h = 128;
+        int w = 1 + hash32(s << 11) % 128;
+        int h = 1 + hash32(s << 13) % 128;
 
         applySeed(&g, dim, s);
         Range r = {scale, x, z, w, h, y, 1};
@@ -155,8 +156,8 @@ uint32_t testAreas(int mc, int dim, int scale)
         free(ids);
     }
     t += now();
-    printf("  MC 1.%-2d dim %-2d @ 1:%-3d - %08x [%ld msec]\n",
-        mc, dim, scale, hash, (long)(t*1e3));
+    printf("  MC %-6s dim %-2d @ 1:%-3d - %08x [%ld msec]\n",
+        mc2str(mc), dim, scale, hash, (long)(t*1e3));
     return hash;
 }
 
@@ -166,14 +167,14 @@ uint32_t testAreas(int mc, int dim, int scale)
 int testGeneration()
 {
     const int mc_vers[] = {
-        MC_1_18,
-        MC_1_16, MC_1_15, MC_1_13, MC_1_12, MC_1_9, MC_1_7,
-        MC_1_6,  MC_1_2,  MC_1_1,  MC_1_0,
+        MC_1_20, MC_1_19, MC_1_19_2, MC_1_18,
+        MC_1_16, MC_1_15,   MC_1_13, MC_1_12, MC_1_9,  MC_1_7,
+        MC_1_6,  MC_1_2,    MC_1_1,  MC_1_0,  MC_B1_8,
     };
     const uint32_t b6_hashes[] = {
-        0xade7f891,
+        0x0f8888ab, 0x391c36ec, 0xea3e8c1c, 0xade7f891,
         0xde9a6574, 0x3a568a6d, 0x96c97323, 0xbc75e996, 0xe27a45a2, 0xbc75e996,
-        0x15b47206, 0x2d7e0fed, 0x5cbf4709, 0xbd794adb,
+        0x15b47206, 0x2d7e0fed, 0x5cbf4709, 0xbd794adb, 0x00000000,
     };
     const int testcnt = sizeof(mc_vers) / sizeof(int);
 
@@ -192,20 +193,19 @@ int testGeneration()
     //while (nextStronghold(&sh, &g) > 0)
     //    printf("Stronghold #: (%6d, %6d)\n", sh.pos.x, sh.pos.z);
 
-    printf("Area generation tests:\n");
-    testAreas(MC_1_18, 0, 1);
-    testAreas(MC_1_18, 0, 4);
-    testAreas(MC_1_18, 0, 16);
-    testAreas(MC_1_18, 0, 64);
+    //printf("Area generation tests:\n");
+    //testAreas(MC_1_19, 0, 4);
+    //testAreas(MC_1_18, 0, 4);
+    //testAreas(MC_1_17, 0, 4);
 
-    //const uint32_t b10_hashes[] = {
-    //    0x00000000,
-    //    0xfdede71d, 0xca8005d7, 0x399f7cc8, 0xb3363967, 0x17e5592f, 0xb3363967,
-    //    0xa52e377c, 0xdb1df71d, 0x58e86947, 0xe1e89cc3,
-    //};
-    //printf("Testing 1x1 biome generation (thorough):\n");
-    //if (!testBiomeGen1x1(mc_vers, b10_hashes, 0, 10, 1, testcnt))
-    //    return -1;
+    const uint32_t b10_hashes[] = {
+        0x00000000, 0x00000000, 0x00000000,
+        0xfdede71d, 0xca8005d7, 0x399f7cc8, 0xb3363967, 0x17e5592f, 0xb3363967,
+        0xa52e377c, 0xdb1df71d, 0x58e86947, 0xe1e89cc3, 0x00000000,
+    };
+    printf("Testing 1x1 biome generation (thorough):\n");
+    if (!testBiomeGen1x1(mc_vers, b10_hashes, 0, 10, 1, testcnt))
+        return -1;
     return 0;
 }
 
@@ -322,7 +322,7 @@ void findBiomeParaBounds()
     }
 
     Generator g;
-    setupGenerator(&g, MC_1_18, 0);
+    setupGenerator(&g, MC_1_20, 0);
     int64_t s;
     int r = 1000;
     for (s = 0; s < 20000; s++)
@@ -341,10 +341,10 @@ void findBiomeParaBounds()
 
     for (i = 0; i < 256; i++)
     {
-        if (!isOverworld(MC_1_18, i))
+        if (!isOverworld(MC_1_20, i))
             continue;
 
-        printf("{%-24s", biome2str(MC_1_18, i));
+        printf("{%-24s", biome2str(MC_1_20, i));
         for (j = 0; j < 6; j++)
         {
             printf(", %6ld,%6ld", bbounds[i][j][0], bbounds[i][j][1]);
@@ -366,7 +366,7 @@ static void canGenerateTest(int mc, int layerId)
     for (seed = 0; seed < 1e6; seed++)
     {
         applySeed(&g, DIM_OVERWORLD, seed);
-        genArea(g.ls.entry_4, ids, 0, 0, 1, 1);
+        genArea(layer, ids, 0, 0, 1, 1);
         int id = ids[0];
         idcnt[id]++;
     }
@@ -382,12 +382,16 @@ static void canGenerateTest(int mc, int layerId)
         ok = 0;
         printf("can:%d, cnt:%d (%s)\n", can, cnt, biome2str(mc, i));
     }
-    printf("canBiomesGenerate() for MC_1_%d, layer (%d) %s!\n",
-        mc, layerId, ok ? "PASSED" : "FAILED");
+    printf("canBiomesGenerate() for MC %-4s, layer (%d) %s!\n",
+        mc2str(mc), layerId, ok ? "PASSED" : "FAILED");
 }
 
 void testCanBiomesGenerate()
 {
+    canGenerateTest(MC_B1_8, L_BIOME_256);
+    canGenerateTest(MC_B1_8, L_ZOOM_64);
+    canGenerateTest(MC_B1_8, L_ZOOM_16);
+    canGenerateTest(MC_B1_8, L_RIVER_MIX_4);
     canGenerateTest(MC_1_0, L_BIOME_256);
     canGenerateTest(MC_1_0, L_ZOOM_64);
     canGenerateTest(MC_1_0, L_ZOOM_16);
@@ -419,7 +423,7 @@ void findStructures(int structureType, int mc, int dim, uint64_t seed,
     // ignore this if you are not looking for end cities
     SurfaceNoise sn;
     if (structureType == End_City)
-        initSurfaceNoiseEnd(&sn, seed);
+        initSurfaceNoise(&sn, DIM_END, seed);
 
     StructureConfig sconf;
     if (!getStructureConfig(structureType, mc, &sconf))
@@ -446,7 +450,7 @@ void findStructures(int structureType, int mc, int dim, uint64_t seed,
                 continue; // biomes are not viable
             if (structureType == End_City)
             {   // end cities have a dedicated terrain checker
-                if (!isViableEndCityTerrain(&g.en, &sn, pos.x, pos.z))
+                if (!isViableEndCityTerrain(&g, &sn, pos.x, pos.z))
                     continue;
             }
             else if (mc >= MC_1_18)
@@ -459,14 +463,19 @@ void findStructures(int structureType, int mc, int dim, uint64_t seed,
     }
 }
 
-
 int main()
 {
+    //testAreas(mc, 0, 1);
+    //testAreas(mc, 0, 4);
+    //testAreas(mc, 0, 16);
+    //testAreas(mc, 0, 256);
     //testCanBiomesGenerate();
-    //testGeneration();
+    testGeneration();
     //findBiomeParaBounds();
+
     return 0;
 }
+
 
 
 
